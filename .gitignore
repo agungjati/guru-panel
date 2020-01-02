@@ -9,7 +9,6 @@
 /coverage
 
 # production
-.next
 /build
 
 # misc
