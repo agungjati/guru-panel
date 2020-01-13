@@ -28,6 +28,7 @@ export default function HomePage() {
         <Route exact path='/' component={DashboardPage} />
         <Route exact path='/chapter' component={ListChapters} />
         <Route path='/chapter/entry' component={FormChapter} />
+        <Route path='/chapter/:id' component={FormChapter} />
         <Route exact path='/course' component={ListCourses} />
         <Route path='/course/entry' component={AddCourses} />
         <Route exact path='/cities' component={ListCities} />

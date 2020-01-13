@@ -51,19 +51,25 @@ class Form extends Component {
   }
 
   onChangeModel = (type, value) => {
-    this.setState({ model: {...this.state.model, type: value } })
+    this.setState({ model: {...this.state.model, [type]: value } })
   }
 
+  onChangeStateSubChapter = (idx, value) => {
+    const subChapter = [...this.state.model.SubChapter]
+    subChapter[idx].name = value;
+    this.setState({ model: {...this.state.model, SubChapter: subChapter } })
+  }
   onSaveForm = () => {
-    const chapters = this.state.model.chapters.map(x => x.id);
-    const courses = this.state.model.courses.map(x => x.id);
-    const classes = this.state.model.classes.map(x => x.id);
+    // const chapters = this.state.model.chapters.map(x => x.id);
+    // const courses = this.state.model.courses.map(x => x.id);
+    // const classes = this.state.model.classes.map(x => x.id);
+    console.log(this.state.model)
     if(this.state.isEntry){
-    this.quizController.onInsert({...this.state.model, chapters, courses, classes })
+    this.chapterController.onInsert(this.state.model)
         .then(() => alert('success'))
     }else{
-      this.quizController.onUpdate({...this.state.model, chapters, courses, classes })
-        .then(() => alert('success'))
+      // this.quizController.onUpdate({...this.state.model, chapters, courses, classes })
+      //   .then(() => alert('success'))
     }
   }
 
@@ -131,7 +137,7 @@ class Form extends Component {
                           id="inputName" 
                           className="form-control"
                           value={model.quizName}
-                          onChange={(ev) => this.onChangeModel(["name"], ev.target.value)}
+                          onChange={(ev) => this.onChangeModel("name", ev.target.value)}
                            />
                       </div>
                       {model.SubChapter.map( (ch, idx) => 
@@ -159,7 +165,7 @@ class Form extends Component {
                         <textarea 
                           className="form-control" 
                           rows="3" 
-                          onChange={(ev) => this.onChangeModel(["SubChapter"][idx], ev.target.value)}
+                          onChange={(ev) => this.onChangeStateSubChapter(idx, ev.target.value)}
                           defaultValue={ch.name}></textarea>
                         </div>
                       </div>
@@ -173,7 +179,9 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Curriculum</label>
-                      <select className="form-control">
+                      <select 
+                        className="form-control" 
+                        onChange={(ev) => this.onChangeModel("curriculum", ev.target.value)}>
                           {curriculumOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
                       </select>
                     </div>
@@ -194,7 +202,9 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Quiz</label>
-                      <select className="form-control">
+                      <select 
+                        className="form-control"
+                        onChange={(ev) => this.onChangeModel("quiz", ev.target.value)}>
                           {quizzesOpts.map(op => <option key={op.id} value={op.id}>{op.quizName}</option>)}
                       </select>
                     </div>
@@ -202,9 +212,11 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >User</label>
-                      <select className="form-control">
-                      </select>
+                      <select 
+                        className="form-control"
+                        onChange={(ev) => this.onChangeModel("user", ev.target.value)}>>
                           {userOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
+                      </select>
                     </div>
                   </div>
                   

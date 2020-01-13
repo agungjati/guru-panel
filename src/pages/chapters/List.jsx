@@ -11,7 +11,8 @@ class List extends Component {
   state = {
     dataTable: {
       thead : [ "No", "Name", "CreatedAt", "UpdatedAt"],
-      tbody : []
+      tbody : [],
+      route: "chapter"
     }
   }
 
