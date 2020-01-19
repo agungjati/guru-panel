@@ -25,9 +25,9 @@ class List extends Component {
         No: idx+1, "ClassLevel" : val.classLevel, "ClassName" : val.className
       }))
 
-      this.setState({
-        dataTable: {...this.state.dataTable, tbody: tbody}
-      })
+        this.setState({
+          dataTable: {...this.state.dataTable, tbody: tbody}
+        })
 
       })
     
