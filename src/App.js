@@ -12,8 +12,6 @@ function App() {
         <Suspense fallback={<LoadingPage />}>
           <Switch>
             <Route path='/' exact component={HomePage} />
-            <Route path='/chapter'  component={HomePage} />
-            <Route path='/classes'  component={HomePage} />
             <Route path='/quiz'  component={HomePage} />
             <Route path='/questions'  component={HomePage} />
             <Route path='/question-sources'  component={HomePage} />
