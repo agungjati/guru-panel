@@ -11,9 +11,9 @@ class Form extends Component {
   state = {
     model: { ...QuestionsourceModel },
     isEntry: true,
-    defaultValues: [],
     questions: []
   };
+
   componentDidMount() {
     const paramId = this.props.match.params.id;
     if (paramId) {
@@ -22,8 +22,11 @@ class Form extends Component {
         .getById(paramId)
         .then(res => res.data)
         .then(res => {
-          const remapQuestions = res.questions.map(x => x.id);
-          this.setState({ model: { ...res, questions: remapQuestions } });
+          res.questions = res.questions.map(x => ({
+            value: x.id,
+            label: x.question
+          }));
+          this.setState({ model: { ...res } });
         });
     }
   }
@@ -43,10 +46,6 @@ class Form extends Component {
       .then(res => {
         const questions = res.map(x => ({ value: x.id, label: x.question }));
         this.setState({ questions: questions });
-        const values = this.state.model.questions;
-        const defaultValues =
-          values?.map(v => questions.find(q => q.value === v)) || [];
-        this.setState({ defaultValues: defaultValues });
         callback([...questions]);
       });
   };
@@ -78,14 +77,15 @@ class Form extends Component {
     this.setState({ model: { ...QuestionsourceModel } });
   };
   render() {
-    const { model, isEntry, defaultValues } = this.state;
+    const { model, isEntry } = this.state;
+
     return (
       <div className="content-wrapper">
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-8">
               <ContentHeader
-                title={isEntry ? "Create An Entry" : "Edit question"}
+                title={`${isEntry ? "Create A" : "Edit"} Question Source`}
               />
             </div>
             <div className="col-md-4 p-2">
@@ -164,9 +164,9 @@ class Form extends Component {
                       <div className="row">
                         <div className="col-md-12">
                           <div className="form-group">
-                            <label htmlFor=""> Questions ()</label>
+                            <label htmlFor=""> Questions ({model?.questions?.length || 0})</label>
                             <AsyncSelect
-                              defaultValue={defaultValues || true}
+                              value={model.questions}
                               placeholder="Add an item ..."
                               closeMenuOnSelect={false}
                               isMulti

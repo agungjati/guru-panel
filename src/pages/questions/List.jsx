@@ -8,8 +8,9 @@ class List extends Component {
   controller = new QuestionController();
   state = {
     dataTable: {
-      thead: ["No", "id", "Question Type", "Question Image", "Option A"],
-      tbody: []
+      thead: ["No", "id", "Question Type", "Question Image", "Answer"],
+      tbody: [],
+      route: "questions"
     }
   };
 
@@ -23,7 +24,7 @@ class List extends Component {
           id: question.id,
           "Question Type": question.questionType,
           "Question Image": question.questionImage?.url,
-          "Option A": question.optionA,
+          Answer: question.answer
         }));
         this.setState({
           dataTable: { ...this.state.dataTable, tbody: tbody }
@@ -34,7 +35,7 @@ class List extends Component {
     const { dataTable } = this.state;
     return (
       <div className="content-wrapper">
-        <ContentHeader title="List Questions" />
+        <ContentHeader title="Questions" />
         <div className="content">
           <div className="row">
             <div className="col-md-12">
