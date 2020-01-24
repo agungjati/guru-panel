@@ -63,7 +63,8 @@ class Form extends Component {
             value: x.id
           }));
           this.setState({ model: { ...res } });
-        });
+        })
+        .catch(e => this.toastr.error(e.response.data.message));
     }
   }
 
@@ -84,7 +85,8 @@ class Form extends Component {
         }));
         this.setState({ questionsource: questionsource });
         callback([...questionsource]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeQuestionSource = questionsource => {
@@ -105,7 +107,8 @@ class Form extends Component {
         const chapters = res.map(x => ({ value: x.id, label: x.name }));
         this.setState({ chapters: chapters });
         callback([...chapters]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeChapter = chapter => {
@@ -126,7 +129,8 @@ class Form extends Component {
         const classes = res.map(x => ({ value: x.id, label: x.className }));
         this.setState({ classes: classes });
         callback([...classes]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeKelas = kelas => {
@@ -147,7 +151,8 @@ class Form extends Component {
         const teachers = res.map(x => ({ value: x.id, label: x.NUPTK }));
         this.setState({ teachers: teachers });
         callback([...teachers]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeTeacher = teacher => {
@@ -168,7 +173,8 @@ class Form extends Component {
         const quizzes = res.map(x => ({ value: x.id, label: x.quizName }));
         this.setState({ quizzes: quizzes });
         callback([...quizzes]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeQuiz = quiz => {

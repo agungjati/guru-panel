@@ -30,7 +30,8 @@ class Form extends Component {
             label: x.question
           }));
           this.setState({ model: { ...res } });
-        });
+        })
+        .catch(e => this.toastr.error(e.response.data.message));
     }
   }
 
@@ -50,7 +51,8 @@ class Form extends Component {
         const questions = res.map(x => ({ value: x.id, label: x.question }));
         this.setState({ questions: questions });
         callback([...questions]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeQuestion = question => {

@@ -44,8 +44,8 @@ class Form extends Component {
           res.classes = res.classes.map(x => ({ label: x.className, value: x.id }))
           res.courses = res.courses.map(x => ({ label: x.name, value: x.id }))
           this.setState({ model: { ...res } })
-
         })
+        .catch(e => this.toastr.error(e.response.data.message))
     }
 
   }
@@ -93,6 +93,8 @@ class Form extends Component {
           const chapters = res.map(x => ({ value: x.id, label: x.name }))
           callback(chapters)
         })
+        .catch(e => this.toastr.error(e.response.data.message));
+
     } else {
       callback(null)
     }
@@ -118,6 +120,8 @@ class Form extends Component {
           const classes = res.map(x => ({ value: x.id, label: x.className }))
           callback(classes)
         })
+        .catch(e => this.toastr.error(e.response.data.message));
+
     } else {
       callback(null)
     }
@@ -141,6 +145,7 @@ class Form extends Component {
         const questions = res.map(x => ({ value: x.id, label: x.question }))
         callback([...questions])
       })
+      .catch(e => this.toastr.error(e.response.data.message));
 
   }
 
@@ -164,6 +169,8 @@ class Form extends Component {
           const courses = res.map(x => ({ value: x.id, label: x.name }))
           callback(courses)
         })
+        .catch(e => this.toastr.error(e.response.data.message));
+        
     } else {
       callback(null)
     }
