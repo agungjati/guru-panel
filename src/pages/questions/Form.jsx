@@ -18,6 +18,9 @@ import {
   difficultiesOptions,
   explanationOptions
 } from "./constant";
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
+
 class Form extends Component {
   configCKEditor = {
     extraPlugins: "mathjax",
@@ -31,6 +34,7 @@ class Form extends Component {
   classesController = new ClassesController();
   teachersController = new TeachersController();
   quizzesController = new QuizzesController();
+  toastr = toastr;
   constructor(props) {
     super(props);
     this.state = {
@@ -59,7 +63,8 @@ class Form extends Component {
             value: x.id
           }));
           this.setState({ model: { ...res } });
-        });
+        })
+        .catch(e => this.toastr.error(e.response.data.message));
     }
   }
 
@@ -80,7 +85,8 @@ class Form extends Component {
         }));
         this.setState({ questionsource: questionsource });
         callback([...questionsource]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeQuestionSource = questionsource => {
@@ -101,7 +107,8 @@ class Form extends Component {
         const chapters = res.map(x => ({ value: x.id, label: x.name }));
         this.setState({ chapters: chapters });
         callback([...chapters]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeChapter = chapter => {
@@ -122,7 +129,8 @@ class Form extends Component {
         const classes = res.map(x => ({ value: x.id, label: x.className }));
         this.setState({ classes: classes });
         callback([...classes]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeKelas = kelas => {
@@ -143,7 +151,8 @@ class Form extends Component {
         const teachers = res.map(x => ({ value: x.id, label: x.NUPTK }));
         this.setState({ teachers: teachers });
         callback([...teachers]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeTeacher = teacher => {
@@ -164,7 +173,8 @@ class Form extends Component {
         const quizzes = res.map(x => ({ value: x.id, label: x.quizName }));
         this.setState({ quizzes: quizzes });
         callback([...quizzes]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeQuiz = quiz => {
@@ -198,9 +208,13 @@ class Form extends Component {
       teacher: teacher.value || ""
     };
     if (this.state.isEntry) {
-      this.questionsController.onInsert(data).then(() => alert("success"));
+      this.questionsController.onInsert(data)
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
     } else {
-      this.questionsController.onUpdate(data).then(() => alert("success"));
+      this.questionsController.onUpdate(data)
+      .then(() => this.toastr.success('Successfully saved'))
+      .catch(e => this.toastr.error(e.response.data.message))
     }
   };
   onResetForm = () => {

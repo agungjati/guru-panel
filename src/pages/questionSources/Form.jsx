@@ -4,6 +4,8 @@ import ContentHeader from "../../components/ContentHeader";
 import QuestionsController from "../../controllers/questions";
 import QuestionsourcesController from "../../controllers/questionsources";
 import { QuestionsourceModel } from "../../model/QuestionsourceModel";
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
 
 class Form extends Component {
   questionsController = new QuestionsController();
@@ -13,6 +15,7 @@ class Form extends Component {
     isEntry: true,
     questions: []
   };
+  toastr = toastr;
 
   componentDidMount() {
     const paramId = this.props.match.params.id;
@@ -27,7 +30,8 @@ class Form extends Component {
             label: x.question
           }));
           this.setState({ model: { ...res } });
-        });
+        })
+        .catch(e => this.toastr.error(e.response.data.message));
     }
   }
 
@@ -47,7 +51,8 @@ class Form extends Component {
         const questions = res.map(x => ({ value: x.id, label: x.question }));
         this.setState({ questions: questions });
         callback([...questions]);
-      });
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
   onChangeQuestion = question => {
@@ -65,11 +70,13 @@ class Form extends Component {
     if (this.state.isEntry) {
       this.questionsourcesController
         .onInsert(data)
-        .then(() => alert("success"));
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
     } else {
       this.questionsourcesController
         .onUpdate(data)
-        .then(() => alert("success"));
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
     }
   };
 
