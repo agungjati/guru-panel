@@ -70,12 +70,12 @@ class Form extends Component {
 
       if (this.state.isEntry) {
         this.quizController.onInsert({ ...this.state.model, chapters, courses, classes })
-          .then(() => this.toastr.success('Successfully saved'))
-          .catch(e => this.toastr.error(e.message))
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
       } else {
         this.quizController.onUpdate({ ...this.state.model, chapters, courses, classes })
-          .then(() => this.toastr.success('Successfully saved'))
-          .catch(e => this.toastr.error(e.message))
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
       }
     }
   }

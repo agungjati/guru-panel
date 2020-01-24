@@ -18,6 +18,9 @@ import {
   difficultiesOptions,
   explanationOptions
 } from "./constant";
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
+
 class Form extends Component {
   configCKEditor = {
     extraPlugins: "mathjax",
@@ -31,6 +34,7 @@ class Form extends Component {
   classesController = new ClassesController();
   teachersController = new TeachersController();
   quizzesController = new QuizzesController();
+  toastr = toastr;
   constructor(props) {
     super(props);
     this.state = {
@@ -198,9 +202,13 @@ class Form extends Component {
       teacher: teacher.value || ""
     };
     if (this.state.isEntry) {
-      this.questionsController.onInsert(data).then(() => alert("success"));
+      this.questionsController.onInsert(data)
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
     } else {
-      this.questionsController.onUpdate(data).then(() => alert("success"));
+      this.questionsController.onUpdate(data)
+      .then(() => this.toastr.success('Successfully saved'))
+      .catch(e => this.toastr.error(e.response.data.message))
     }
   };
   onResetForm = () => {
