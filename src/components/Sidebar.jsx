@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const SideBar = () => {
   return (
-    <aside className="main-sidebar sidebar-dark-primary elevation-4">
+    <aside className="main-sidebar sidebar-dark-primary elevation-4 position-fixed">
       <a className="brand-link">
         <img
           src="/dist/img/AdminLTELogo.png"
@@ -20,24 +20,12 @@ const SideBar = () => {
             role="menu"
             data-accordion="false"
           >
-            {/* <li className="nav-item">
-              <Link to="/chapter" className="nav-link">
-                <i className="nav-icon far fa-edit"></i>
-                <p>Chapters</p>
-              </Link>
-            </li> */}
             <li className="nav-item">
               <Link to="/quiz" className="nav-link">
                 <i className="nav-icon far fa-edit"></i>
                 <p>Quizzes</p>
               </Link>
             </li>
-            {/* <li className="nav-item">
-              <Link to="/classes" className="nav-link">
-                <i className="nav-icon far fa-edit"></i>
-                <p>Classes</p>
-              </Link>
-            </li> */}
             <li className="nav-item">
               <Link to="/question-sources" className="nav-link">
                 <i className="nav-icon far fa-edit"></i>

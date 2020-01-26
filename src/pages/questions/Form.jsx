@@ -18,8 +18,8 @@ import {
   difficultiesOptions,
   explanationOptions
 } from "./constant";
-import 'toastr/build/toastr.min.css'
-import toastr from 'toastr'
+import "toastr/build/toastr.min.css";
+import toastr from "toastr";
 
 class Form extends Component {
   configCKEditor = {
@@ -47,7 +47,8 @@ class Form extends Component {
       imageExplanation: {},
       pdfExplanation: {},
       videoExplanation: {},
-      questionVideo: {}
+      questionVideo: {},
+      image: null,
     };
   }
   componentDidMount() {
@@ -196,25 +197,35 @@ class Form extends Component {
       [key]: newState
     });
   };
+  handleImageChange = (e) => {
+    this.setState({
+      image: e.target.files[0]
+    })
+  };
   onSaveForm = () => {
     const quizzes = this.state.model?.quizzes?.map(x => x.value) || [];
     const { questionsource, chapter, class: kelas, teacher } = this.state.model;
     const data = {
       ...this.state.model,
       quizzes,
-      questionsource: questionsource.value || "",
-      chapter: chapter.value || "",
-      class: kelas?.value || "",
-      teacher: teacher.value || ""
+      questionsource: questionsource?.value || null,
+      chapter: chapter?.value || null,
+      class: kelas?.value || null,
+      teacher: teacher?.value || null,
+      Workflow: {
+        status: "pending"
+      }
     };
     if (this.state.isEntry) {
-      this.questionsController.onInsert(data)
-        .then(() => this.toastr.success('Successfully saved'))
-        .catch(e => this.toastr.error(e.response.data.message))
+      this.questionsController
+        .onInsert(data, this.state.image)
+        .then(() => this.toastr.success("Successfully saved"))
+        .catch(e => this.toastr.error(e.response.data.message));
     } else {
-      this.questionsController.onUpdate(data)
-      .then(() => this.toastr.success('Successfully saved'))
-      .catch(e => this.toastr.error(e.response.data.message))
+      this.questionsController
+        .onUpdate(data)
+        .then(() => this.toastr.success("Successfully saved"))
+        .catch(e => this.toastr.error(e.response.data.message));
     }
   };
   onResetForm = () => {
@@ -272,6 +283,17 @@ class Form extends Component {
                       <div className="row">
                         <div className="col-md-6">
                           <FormGroup
+                            label="Question"
+                            name="question"
+                            value={model.question}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("question", ev.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <FormGroup
                             label="Question Type"
                             name="questionType"
                             value={model.questionType}
@@ -285,12 +307,35 @@ class Form extends Component {
                             }
                           />
                         </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <div className="form-group">
+                            <label>Question Detail</label>
+                            <CKEditor
+                              onBeforeLoad={CKEDITOR =>
+                                (CKEDITOR.disableAutoInline = true)
+                              }
+                              config={this.configCKEditor}
+                              data={model.questionDetail}
+                              onChange={ev =>
+                                this.onChangeModel(
+                                  "questionDetail",
+                                  ev.editor.getData()
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
                             <label>Question Image</label>
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
+                              onChange={this.handleImageChange}
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -306,6 +351,35 @@ class Form extends Component {
                                     alt=""
                                     className="Dropzone-img"
                                     src={questionImage[0]}
+                                  />
+                                ) : (
+                                  "Drag & drop your file into this area or browse for a file to upload"
+                                )}
+                              </div>
+                            </MagicDropzone>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label>Question Video</label>
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={value}
+                              onDrop={(accepted, rejected, links) =>
+                                this.onDrop(
+                                  accepted,
+                                  rejected,
+                                  links
+                                )("questionVideo")
+                              }
+                            >
+                              <div className="Dropzone-content">
+                                {Object.keys(questionVideo).length > 0 ? (
+                                  <img
+                                    key={questionVideo[0]}
+                                    alt=""
+                                    className="Dropzone-img"
+                                    src={questionVideo[0]}
                                   />
                                 ) : (
                                   "Drag & drop your file into this area or browse for a file to upload"
@@ -411,51 +485,39 @@ class Form extends Component {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label>Image Explanation</label>
-                            <MagicDropzone
-                              className="Dropzone"
-                              accept={value}
-                              onDrop={(accepted, rejected, links) =>
-                                this.onDrop(
-                                  accepted,
-                                  rejected,
-                                  links
-                                )("imageExplanation")
-                              }
-                            >
-                              <div className="Dropzone-content">
-                                {Object.keys(imageExplanation).length > 0 ? (
-                                  <img
-                                    key={imageExplanation[0]}
-                                    alt=""
-                                    className="Dropzone-img"
-                                    src={imageExplanation[0]}
-                                  />
-                                ) : (
-                                  "Drag & drop your file into this area or browse for a file to upload"
-                                )}
-                              </div>
-                            </MagicDropzone>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>Text Explanation</label>
-                            <CKEditor
-                              onBeforeLoad={CKEDITOR =>
-                                (CKEDITOR.disableAutoInline = true)
-                              }
-                              config={this.configCKEditor}
-                              data={model.textExplanation}
+                            <FormGroup
+                              label="Difficulties"
+                              name="difficulties"
+                              value={model.difficulties}
+                              options={difficultiesOptions}
+                              componentType="select"
                               onChange={ev =>
                                 this.onChangeModel(
-                                  "textExplanation",
-                                  ev.editor.getData()
+                                  "difficulties",
+                                  ev.target.value
                                 )
                               }
                             />
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-12">
+                            <div className="form-group">
+                              <label>Text Explanation</label>
+                              <CKEditor
+                                onBeforeLoad={CKEDITOR =>
+                                  (CKEDITOR.disableAutoInline = true)
+                                }
+                                config={this.configCKEditor}
+                                data={model.textExplanation}
+                                onChange={ev =>
+                                  this.onChangeModel(
+                                    "textExplanation",
+                                    ev.editor.getData()
+                                  )
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -522,24 +584,7 @@ class Form extends Component {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
-                            <FormGroup
-                              label="Difficulties"
-                              name="difficulties"
-                              value={model.difficulties}
-                              options={difficultiesOptions}
-                              componentType="select"
-                              onChange={ev =>
-                                this.onChangeModel(
-                                  "difficulties",
-                                  ev.target.value
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label>Question Video</label>
+                            <label>Image Explanation</label>
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
@@ -548,55 +593,22 @@ class Form extends Component {
                                   accepted,
                                   rejected,
                                   links
-                                )("questionVideo")
+                                )("imageExplanation")
                               }
                             >
                               <div className="Dropzone-content">
-                                {Object.keys(questionVideo).length > 0 ? (
+                                {Object.keys(imageExplanation).length > 0 ? (
                                   <img
-                                    key={questionVideo[0]}
+                                    key={imageExplanation[0]}
                                     alt=""
                                     className="Dropzone-img"
-                                    src={questionVideo[0]}
+                                    src={imageExplanation[0]}
                                   />
                                 ) : (
                                   "Drag & drop your file into this area or browse for a file to upload"
                                 )}
                               </div>
                             </MagicDropzone>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <FormGroup
-                            label="Question"
-                            name="question"
-                            value={model.question}
-                            componentType="input"
-                            onChange={ev =>
-                              this.onChangeModel("question", ev.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>Question Detail</label>
-                            <CKEditor
-                              onBeforeLoad={CKEDITOR =>
-                                (CKEDITOR.disableAutoInline = true)
-                              }
-                              config={this.configCKEditor}
-                              data={model.questionDetail}
-                              onChange={ev =>
-                                this.onChangeModel(
-                                  "questionDetail",
-                                  ev.editor.getData()
-                                )
-                              }
-                            />
                           </div>
                         </div>
                       </div>
@@ -611,7 +623,6 @@ class Form extends Component {
                         <AsyncSelect
                           value={model.questionsource}
                           placeholder="Add an item ..."
-                          closeMenuOnSelect={false}
                           cacheOptions
                           loadOptions={this.loadQuestionSources}
                           defaultOptions
@@ -623,7 +634,6 @@ class Form extends Component {
                         <AsyncSelect
                           value={model.chapter}
                           placeholder="Add an item ..."
-                          closeMenuOnSelect={false}
                           cacheOptions
                           loadOptions={this.loadChapters}
                           defaultOptions
@@ -635,7 +645,6 @@ class Form extends Component {
                         <AsyncSelect
                           value={model.class}
                           placeholder="Add an item ..."
-                          closeMenuOnSelect={false}
                           cacheOptions
                           loadOptions={this.loadClasses}
                           defaultOptions
@@ -647,7 +656,6 @@ class Form extends Component {
                         <AsyncSelect
                           value={model.teacher}
                           placeholder="Add an item ..."
-                          closeMenuOnSelect={false}
                           cacheOptions
                           loadOptions={this.loadTeachers}
                           defaultOptions
