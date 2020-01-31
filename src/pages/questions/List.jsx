@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Table from "../../components/Table";
+import moment from 'moment';
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
 import QuestionController from "../../controllers/questions";
@@ -8,7 +9,7 @@ class List extends Component {
   controller = new QuestionController();
   state = {
     dataTable: {
-      thead: ["No", "id", "Question Type", "Question Image", "Answer"],
+      thead: ["No", "id", "Question", "Question Type", "Created At"],
       tbody: [],
       route: "questions"
     }
@@ -23,8 +24,10 @@ class List extends Component {
           No: ++idx,
           id: question.id,
           "Question Type": question.questionType,
-          "Question Image": question.questionImage?.url,
-          Answer: question.answer
+          "Question": question.question,
+          "Created At": moment(new Date(question.createdAt)).format(
+            "D MMMM Y"
+          ),
         }));
         this.setState({
           dataTable: { ...this.state.dataTable, tbody: tbody }
