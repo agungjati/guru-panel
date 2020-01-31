@@ -10,6 +10,7 @@ import QuestionController from '../../controllers/questions'
 import { QuizModel } from '../../model/QuizModel'
 import 'toastr/build/toastr.min.css'
 import toastr from 'toastr'
+import { Redirect } from "react-router-dom";
 
 class Form extends Component {
 
@@ -22,7 +23,8 @@ class Form extends Component {
 
   state = {
     model: { ...QuizModel },
-    isEntry: true
+    isEntry: true,
+    isRedirect: false
   }
   configCKEditor = {
     extraPlugins: 'mathjax',
@@ -70,11 +72,17 @@ class Form extends Component {
 
       if (this.state.isEntry) {
         this.quizController.onInsert({ ...this.state.model, chapters, courses, classes })
-        .then(() => this.toastr.success('Successfully saved'))
+        .then(() => {
+          this.toastr.success('Successfully saved')
+          this.setState({ isRedirect: true })
+        })
         .catch(e => this.toastr.error(e.response.data.message))
       } else {
         this.quizController.onUpdate({ ...this.state.model, chapters, courses, classes })
-        .then(() => this.toastr.success('Successfully saved'))
+        .then(() => {
+          this.toastr.success('Successfully saved')
+          this.setState({ isRedirect: true })
+        })
         .catch(e => this.toastr.error(e.response.data.message))
       }
     }
@@ -189,8 +197,9 @@ class Form extends Component {
 
 
   render() {
-    const { model, isEntry } = this.state
+    const { model, isEntry, isRedirect } = this.state
     return (
+      isRedirect ? <Redirect to="/quiz" /> :
       <div className="content-wrapper">
         <div className='col-md-12'>
 
