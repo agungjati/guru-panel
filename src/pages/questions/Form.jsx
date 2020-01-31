@@ -1,60 +1,244 @@
 import React, { Component } from "react";
+import AsyncSelect from "react-select/async";
 import MagicDropzone from "react-magic-dropzone";
 import ContentHeader from "../../components/ContentHeader";
+import FormGroup from "../../components/FormGroup";
 import QuestionsController from "../../controllers/questions";
+import QuestionSourcesController from "../../controllers/questionsources";
+import ChaptersController from "../../controllers/chapters";
+import ClassesController from "../../controllers/classes";
+import TeachersController from "../../controllers/teachers";
+import QuizzesController from "../../controllers/quizzes";
 import CKEditor from "ckeditor4-react";
 import "./styles.css";
 import { QuestionsModel } from "../../model/questionsModel";
+import {
+  questionOptions,
+  answerOptions,
+  difficultiesOptions,
+  explanationOptions
+} from "./constant";
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
 
 class Form extends Component {
-  questionsController = new QuestionsController();
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: "image/jpeg, image/png, .jpg, .jpeg, .png",
-      previews: []
-    };
-  }
-
   configCKEditor = {
     extraPlugins: "mathjax",
     mathJaxLib:
       "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML",
     height: 320
   };
-  
-  onDrop = (accepted, rejected, links) => {
-    accepted = accepted.map(v => v.preview);
-    var newPreviews = [...this.state.previews, ...accepted, ...links];
+  questionsController = new QuestionsController();
+  questionSourcesController = new QuestionSourcesController();
+  chaptersController = new ChaptersController();
+  classesController = new ClassesController();
+  teachersController = new TeachersController();
+  quizzesController = new QuizzesController();
+  toastr = toastr;
+  constructor(props) {
+    super(props);
+    this.state = {
+      model: { ...QuestionsModel },
+      classes: [],
+      quizzes: [],
+      isEntry: true,
+      value: "image/jpeg, image/png, .jpg, .jpeg, .png",
+      questionImage: {},
+      imageExplanation: {},
+      pdfExplanation: {},
+      videoExplanation: {},
+      questionVideo: {}
+    };
+  }
+  componentDidMount() {
+    const paramId = this.props.match.params.id;
+    if (paramId) {
+      this.setState({ isEntry: false });
+      this.questionsController
+        .getById(paramId)
+        .then(res => res.data)
+        .then(res => {
+          res.quizzes = res.quizzes.map(x => ({
+            label: x.quizName,
+            value: x.id
+          }));
+          this.setState({ model: { ...res } });
+        })
+        .catch(e => this.toastr.error(e.response.data.message));
+    }
+  }
+
+  onChangeModel = (type, value) => {
+    let val = value;
+    this.setState({ model: { ...this.state.model, [type]: val } });
+  };
+
+  loadQuestionSources = (inputValue, callback) => {
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.questionSourcesController
+      .getList(param)
+      .then(res => res.data)
+      .then(res => {
+        const questionsource = res.map(x => ({
+          value: x.id,
+          label: x.sourceInfo
+        }));
+        this.setState({ questionsource: questionsource });
+        callback([...questionsource]);
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
+  };
+
+  onChangeQuestionSource = questionsource => {
     this.setState({
-      previews: newPreviews
+      model: {
+        ...this.state.model,
+        questionsource: questionsource
+      }
     });
   };
 
-  onSaveForm = () => {
-    const questions = this.state.model?.questions?.map(x => x.value) || [];
-    const data = { ...this.state.model, questions };
-    if (this.state.isEntry) {
-      this.questionsController
-        .onInsert(data)
-        .then(() => alert("success"));
-    } else {
-      this.questionsController
-        .onUpdate(data)
-        .then(() => alert("success"));
-    }
+  loadChapters = (inputValue, callback) => {
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.chaptersController
+      .getList(param)
+      .then(res => res.data)
+      .then(res => {
+        const chapters = res.map(x => ({ value: x.id, label: x.name }));
+        this.setState({ chapters: chapters });
+        callback([...chapters]);
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
   };
 
+  onChangeChapter = chapter => {
+    this.setState({
+      model: {
+        ...this.state.model,
+        chapter: chapter
+      }
+    });
+  };
+
+  loadClasses = (inputValue, callback) => {
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.classesController
+      .getList(param)
+      .then(res => res.data)
+      .then(res => {
+        const classes = res.map(x => ({ value: x.id, label: x.className }));
+        this.setState({ classes: classes });
+        callback([...classes]);
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
+  };
+
+  onChangeKelas = kelas => {
+    this.setState({
+      model: {
+        ...this.state.model,
+        class: kelas
+      }
+    });
+  };
+
+  loadTeachers = (inputValue, callback) => {
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.teachersController
+      .getList(param)
+      .then(res => res.data)
+      .then(res => {
+        const teachers = res.map(x => ({ value: x.id, label: x.NUPTK }));
+        this.setState({ teachers: teachers });
+        callback([...teachers]);
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
+  };
+
+  onChangeTeacher = teacher => {
+    this.setState({
+      model: {
+        ...this.state.model,
+        teacher: teacher
+      }
+    });
+  };
+
+  loadQuizzes = (inputValue, callback) => {
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.quizzesController
+      .getList(param)
+      .then(res => res.data)
+      .then(res => {
+        const quizzes = res.map(x => ({ value: x.id, label: x.quizName }));
+        this.setState({ quizzes: quizzes });
+        callback([...quizzes]);
+      })
+      .catch(e => this.toastr.error(e.response.data.message));
+  };
+
+  onChangeQuiz = quiz => {
+    this.setState({
+      model: {
+        ...this.state.model,
+        quizzes: quiz
+      }
+    });
+  };
+  onDrop = (accepted, rejected, links) => key => {
+    accepted = accepted.map(v => v.preview);
+    var newState = {
+      ...this.state[key],
+      ...accepted,
+      ...links
+    };
+    this.setState({
+      [key]: newState
+    });
+  };
+  onSaveForm = () => {
+    const quizzes = this.state.model?.quizzes?.map(x => x.value) || [];
+    const { questionsource, chapter, class: kelas, teacher } = this.state.model;
+    const data = {
+      ...this.state.model,
+      quizzes,
+      questionsource: questionsource.value || "",
+      chapter: chapter.value || "",
+      class: kelas?.value || "",
+      teacher: teacher.value || ""
+    };
+    if (this.state.isEntry) {
+      this.questionsController.onInsert(data)
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.response.data.message))
+    } else {
+      this.questionsController.onUpdate(data)
+      .then(() => this.toastr.success('Successfully saved'))
+      .catch(e => this.toastr.error(e.response.data.message))
+    }
+  };
   onResetForm = () => {
     this.setState({ model: { ...QuestionsModel } });
   };
   render() {
+    const {
+      model,
+      isEntry,
+      value,
+      questionImage,
+      imageExplanation,
+      pdfExplanation,
+      videoExplanation,
+      questionVideo
+    } = this.state;
     return (
       <div className="content-wrapper">
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-10">
-              <ContentHeader title="Create An Entry" />
+            <div className="col-md-8">
+              <ContentHeader
+                title={`${isEntry ? "Create A" : "Edit"} Question`}
+              />
             </div>
             <div className="col-md-4 p-2">
               <div className="row p-2 float-right">
@@ -66,7 +250,6 @@ class Form extends Component {
                     Reset
                   </button>
                 </div>
-
                 <div className="col-md-6 p-2 ">
                   <button
                     onClick={this.onSaveForm}
@@ -79,7 +262,6 @@ class Form extends Component {
             </div>
           </div>
         </div>
-
         <div className="content">
           <div className="row">
             <div className="col-md-12">
@@ -89,36 +271,45 @@ class Form extends Component {
                     <div className="card-body pad">
                       <div className="row">
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Question Type</label>
-                            <select className="form-control custom-select">
-                              <option selected="" disabled="">
-                                Choose here
-                              </option>
-                              <option>image</option>
-                              <option>text</option>
-                            </select>
-                          </div>
+                          <FormGroup
+                            label="Question Type"
+                            name="questionType"
+                            value={model.questionType}
+                            options={questionOptions}
+                            componentType="select"
+                            onChange={ev =>
+                              this.onChangeModel(
+                                "questionType",
+                                ev.target.value
+                              )
+                            }
+                          />
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label for="inputName">Question Image</label>
+                            <label>Question Image</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={this.state.value}
-                              onDrop={this.onDrop}
+                              accept={value}
+                              onDrop={(accepted, rejected, links) =>
+                                this.onDrop(
+                                  accepted,
+                                  rejected,
+                                  links
+                                )("questionImage")
+                              }
                             >
                               <div className="Dropzone-content">
-                                {this.state.previews.length > 0
-                                  ? this.state.previews.map((v, i) => (
-                                      <img
-                                        key={i}
-                                        alt=""
-                                        className="Dropzone-img"
-                                        src={v}
-                                      />
-                                    ))
-                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                                {Object.keys(questionImage).length > 0 ? (
+                                  <img
+                                    key={questionImage[0]}
+                                    alt=""
+                                    className="Dropzone-img"
+                                    src={questionImage[0]}
+                                  />
+                                ) : (
+                                  "Drag & drop your file into this area or browse for a file to upload"
+                                )}
                               </div>
                             </MagicDropzone>
                           </div>
@@ -126,247 +317,285 @@ class Form extends Component {
                       </div>
                       <div className="row">
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Option A</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
+                          <FormGroup
+                            label="Option A"
+                            name="optionA"
+                            value={model.optionA}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("optionA", ev.target.value)
+                            }
+                          />
                         </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Option B</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Option C</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Option D</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Option E</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Answer</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Explanation Type</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Image Explanation</label>
-                            <MagicDropzone
-                              className="Dropzone"
-                              accept={this.state.value}
-                              onDrop={this.onDrop}
-                            >
-                              <div className="Dropzone-content">
-                                {this.state.previews.length > 0
-                                  ? this.state.previews.map((v, i) => (
-                                      <img
-                                        key={i}
-                                        alt=""
-                                        className="Dropzone-img"
-                                        src={v}
-                                      />
-                                    ))
-                                  : "Drag & drop your file into this area or browse for a file to upload"}
-                              </div>
-                            </MagicDropzone>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label for="inputName">Text Explanation</label>
 
-                            <CKEditor
-                              onBeforeLoad={CKEDITOR =>
-                                (CKEDITOR.disableAutoInline = true)
+                        <div className="col-md-6">
+                          <FormGroup
+                            label="Option B"
+                            name="optionB"
+                            value={model.optionB}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("optionB", ev.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <FormGroup
+                            label="Option C"
+                            name="optionC"
+                            value={model.optionC}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("optionC", ev.target.value)
+                            }
+                          />
+                        </div>
+
+                        <div className="col-md-6">
+                          <FormGroup
+                            label="Option D"
+                            name="optionD"
+                            value={model.optionD}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("optionD", ev.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <FormGroup
+                            label="Option E"
+                            name="optionE"
+                            value={model.optionE}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("optionE", ev.target.value)
+                            }
+                          />
+                        </div>
+
+                        <div className="col-md-6">
+                          <FormGroup
+                            label="Answer"
+                            name="answer"
+                            value={model.answer}
+                            options={answerOptions}
+                            componentType="select"
+                            onChange={ev =>
+                              this.onChangeModel("answer", ev.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <FormGroup
+                              label="Explanation Type"
+                              name="explanationType"
+                              value={model.explanationType}
+                              options={explanationOptions}
+                              componentType="select"
+                              onChange={ev =>
+                                this.onChangeModel(
+                                  "explanationType",
+                                  ev.target.value
+                                )
                               }
-                              config={this.configCKEditor}
-                              data=""
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Pdf Explanation</label>
-                            <MagicDropzone
-                              className="Dropzone"
-                              accept={this.state.value}
-                              onDrop={this.onDrop}
-                            >
-                              <div className="Dropzone-content">
-                                {this.state.previews.length > 0
-                                  ? this.state.previews.map((v, i) => (
-                                      <img
-                                        key={i}
-                                        alt=""
-                                        className="Dropzone-img"
-                                        src={v}
-                                      />
-                                    ))
-                                  : "Drag & drop your file into this area or browse for a file to upload"}
-                              </div>
-                            </MagicDropzone>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Video Explanation</label>
-                            <MagicDropzone
-                              className="Dropzone"
-                              accept={this.state.value}
-                              onDrop={this.onDrop}
-                            >
-                              <div className="Dropzone-content">
-                                {this.state.previews.length > 0
-                                  ? this.state.previews.map((v, i) => (
-                                      <img
-                                        key={i}
-                                        alt=""
-                                        className="Dropzone-img"
-                                        src={v}
-                                      />
-                                    ))
-                                  : "Drag & drop your file into this area or browse for a file to upload"}
-                              </div>
-                            </MagicDropzone>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Difficulties</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
                             />
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label for="inputName">Question Video</label>
+                            <label>Image Explanation</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={this.state.value}
-                              onDrop={this.onDrop}
+                              accept={value}
+                              onDrop={(accepted, rejected, links) =>
+                                this.onDrop(
+                                  accepted,
+                                  rejected,
+                                  links
+                                )("imageExplanation")
+                              }
                             >
                               <div className="Dropzone-content">
-                                {this.state.previews.length > 0
-                                  ? this.state.previews.map((v, i) => (
-                                      <img
-                                        key={i}
-                                        alt=""
-                                        className="Dropzone-img"
-                                        src={v}
-                                      />
-                                    ))
-                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                                {Object.keys(imageExplanation).length > 0 ? (
+                                  <img
+                                    key={imageExplanation[0]}
+                                    alt=""
+                                    className="Dropzone-img"
+                                    src={imageExplanation[0]}
+                                  />
+                                ) : (
+                                  "Drag & drop your file into this area or browse for a file to upload"
+                                )}
                               </div>
                             </MagicDropzone>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label for="inputName">Question</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
                           </div>
                         </div>
                       </div>
                       <div className="row">
                         <div className="col-md-12">
                           <div className="form-group">
-                            <label for="inputName">Question Detail</label>
+                            <label>Text Explanation</label>
                             <CKEditor
                               onBeforeLoad={CKEDITOR =>
                                 (CKEDITOR.disableAutoInline = true)
                               }
                               config={this.configCKEditor}
-                              data=""
+                              data={model.textExplanation}
+                              onChange={ev =>
+                                this.onChangeModel(
+                                  "textExplanation",
+                                  ev.editor.getData()
+                                )
+                              }
                             />
                           </div>
                         </div>
                       </div>
                       <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label>Pdf Explanation</label>
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={value}
+                              onDrop={(accepted, rejected, links) =>
+                                this.onDrop(
+                                  accepted,
+                                  rejected,
+                                  links
+                                )("pdfExplanation")
+                              }
+                            >
+                              <div className="Dropzone-content">
+                                {Object.keys(pdfExplanation).length > 0 ? (
+                                  <img
+                                    key={pdfExplanation[0]}
+                                    alt=""
+                                    className="Dropzone-img"
+                                    src={pdfExplanation[0]}
+                                  />
+                                ) : (
+                                  "Drag & drop your file into this area or browse for a file to upload"
+                                )}
+                              </div>
+                            </MagicDropzone>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label>Video Explanation</label>
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={value}
+                              onDrop={(accepted, rejected, links) =>
+                                this.onDrop(
+                                  accepted,
+                                  rejected,
+                                  links
+                                )("videoExplanation")
+                              }
+                            >
+                              <div className="Dropzone-content">
+                                {Object.keys(videoExplanation).length > 0 ? (
+                                  <img
+                                    key={videoExplanation[0]}
+                                    alt=""
+                                    className="Dropzone-img"
+                                    src={videoExplanation[0]}
+                                  />
+                                ) : (
+                                  "Drag & drop your file into this area or browse for a file to upload"
+                                )}
+                              </div>
+                            </MagicDropzone>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <FormGroup
+                              label="Difficulties"
+                              name="difficulties"
+                              value={model.difficulties}
+                              options={difficultiesOptions}
+                              componentType="select"
+                              onChange={ev =>
+                                this.onChangeModel(
+                                  "difficulties",
+                                  ev.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label>Question Video</label>
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={value}
+                              onDrop={(accepted, rejected, links) =>
+                                this.onDrop(
+                                  accepted,
+                                  rejected,
+                                  links
+                                )("questionVideo")
+                              }
+                            >
+                              <div className="Dropzone-content">
+                                {Object.keys(questionVideo).length > 0 ? (
+                                  <img
+                                    key={questionVideo[0]}
+                                    alt=""
+                                    className="Dropzone-img"
+                                    src={questionVideo[0]}
+                                  />
+                                ) : (
+                                  "Drag & drop your file into this area or browse for a file to upload"
+                                )}
+                              </div>
+                            </MagicDropzone>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <FormGroup
+                            label="Question"
+                            name="question"
+                            value={model.question}
+                            componentType="input"
+                            onChange={ev =>
+                              this.onChangeModel("question", ev.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
                         <div className="col-md-12">
                           <div className="form-group">
-                            <label for="inputName">Workflow</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
+                            <label>Question Detail</label>
+                            <CKEditor
+                              onBeforeLoad={CKEDITOR =>
+                                (CKEDITOR.disableAutoInline = true)
+                              }
+                              config={this.configCKEditor}
+                              data={model.questionDetail}
+                              onChange={ev =>
+                                this.onChangeModel(
+                                  "questionDetail",
+                                  ev.editor.getData()
+                                )
+                              }
                             />
                           </div>
                         </div>
@@ -374,77 +603,70 @@ class Form extends Component {
                     </div>
                   </div>
                 </div>
-
                 <div className="col-md-4">
                   <div className="card">
                     <div className="card-body pad">
                       <div className="form-group">
-                        <label for="inputStatus">Question Source</label>
-                        <select className="form-control custom-select">
-                          <option selected="" disabled="">
-                            Select one
-                          </option>
-                          <option>On Hold</option>
-                          <option>Canceled</option>
-                          <option>Success</option>
-                        </select>
+                        <label>Question Source</label>
+                        <AsyncSelect
+                          value={model.questionsource}
+                          placeholder="Add an item ..."
+                          closeMenuOnSelect={false}
+                          cacheOptions
+                          loadOptions={this.loadQuestionSources}
+                          defaultOptions
+                          onChange={this.onChangeQuestionSource}
+                        />
                       </div>
                       <div className="form-group">
-                        <label for="inputStatus">Chapter</label>
-                        <select className="form-control custom-select">
-                          <option selected="" disabled="">
-                            Select one
-                          </option>
-                          <option>On Hold</option>
-                          <option>Canceled</option>
-                          <option>Success</option>
-                        </select>
+                        <label>Chapter</label>
+                        <AsyncSelect
+                          value={model.chapter}
+                          placeholder="Add an item ..."
+                          closeMenuOnSelect={false}
+                          cacheOptions
+                          loadOptions={this.loadChapters}
+                          defaultOptions
+                          onChange={this.onChangeChapter}
+                        />
                       </div>
                       <div className="form-group">
-                        <label for="inputStatus">Class</label>
-                        <select className="form-control custom-select">
-                          <option selected="" disabled="">
-                            Select one
-                          </option>
-                          <option>On Hold</option>
-                          <option>Canceled</option>
-                          <option>Success</option>
-                        </select>
+                        <label>Class</label>
+                        <AsyncSelect
+                          value={model.class}
+                          placeholder="Add an item ..."
+                          closeMenuOnSelect={false}
+                          cacheOptions
+                          loadOptions={this.loadClasses}
+                          defaultOptions
+                          onChange={this.onChangeKelas}
+                        />
                       </div>
                       <div className="form-group">
-                        <label for="inputStatus">Teacher</label>
-                        <select className="form-control custom-select">
-                          <option selected="" disabled="">
-                            Select one
-                          </option>
-                          <option>On Hold</option>
-                          <option>Canceled</option>
-                          <option>Success</option>
-                        </select>
+                        <label>Teacher</label>
+                        <AsyncSelect
+                          value={model.teacher}
+                          placeholder="Add an item ..."
+                          closeMenuOnSelect={false}
+                          cacheOptions
+                          loadOptions={this.loadTeachers}
+                          defaultOptions
+                          onChange={this.onChangeTeacher}
+                        />
                       </div>
                       {/* multiple choices */}
                       <div className="form-group">
-                        <label for="inputStatus">Quizzess (0)</label>
-                        <select className="form-control custom-select">
-                          <option selected="" disabled="">
-                            Add an item...
-                          </option>
-                          <option>On Hold</option>
-                          <option>Canceled</option>
-                          <option>Success</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label for="inputStatus">Quizzess (0)</label>
-                        <select className="form-control ">
-                          <option>Alabama</option>
-                          <option>Alaska</option>
-                          <option>California</option>
-                          <option>Delaware</option>
-                          <option>Tennessee</option>
-                          <option>Texas</option>
-                          <option>Washington</option>
-                        </select>
+                        <label>Quizzes({model?.quizzes?.length || 0})</label>
+                        <AsyncSelect
+                          value={model.quizzes}
+                          placeholder="Add an item ..."
+                          closeMenuOnSelect={false}
+                          isMulti
+                          cacheOptions
+                          loadOptions={this.loadQuizzes}
+                          defaultOptions
+                          onChange={this.onChangeQuiz}
+                        />
                       </div>
                     </div>
                   </div>
@@ -457,5 +679,4 @@ class Form extends Component {
     );
   }
 }
-
 export default Form;
