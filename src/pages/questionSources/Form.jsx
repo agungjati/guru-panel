@@ -6,6 +6,7 @@ import QuestionsourcesController from "../../controllers/questionsources";
 import { QuestionsourceModel } from "../../model/QuestionsourceModel";
 import 'toastr/build/toastr.min.css'
 import toastr from 'toastr'
+import { Redirect } from "react-router-dom";
 
 class Form extends Component {
   questionsController = new QuestionsController();
@@ -13,7 +14,8 @@ class Form extends Component {
   state = {
     model: { ...QuestionsourceModel },
     isEntry: true,
-    questions: []
+    questions: [],
+    isRedirect: false
   };
   toastr = toastr;
 
@@ -70,12 +72,18 @@ class Form extends Component {
     if (this.state.isEntry) {
       this.questionsourcesController
         .onInsert(data)
-        .then(() => this.toastr.success('Successfully saved'))
+        .then(() => {
+          this.toastr.success('Successfully saved')
+          this.setState({ isRedirect: true })
+        })
         .catch(e => this.toastr.error(e.response.data.message))
     } else {
       this.questionsourcesController
         .onUpdate(data)
-        .then(() => this.toastr.success('Successfully saved'))
+        .then(() => {
+          this.toastr.success('Successfully saved')
+          this.setState({ isRedirect: true })
+        })
         .catch(e => this.toastr.error(e.response.data.message))
     }
   };
@@ -84,9 +92,9 @@ class Form extends Component {
     this.setState({ model: { ...QuestionsourceModel } });
   };
   render() {
-    const { model, isEntry } = this.state;
+    const { model, isEntry, isRedirect } = this.state;
 
-    return (
+    return ( isRedirect ? <Redirect to="/question-sources" /> : 
       <div className="content-wrapper">
         <div className="col-md-12">
           <div className="row">
