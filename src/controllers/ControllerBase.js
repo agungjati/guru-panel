@@ -19,7 +19,7 @@ export default class ControllerBase {
         return response;
       },
       error => {
-        if (error.response.status === 401) {
+        if (error?.response?.status === 401) {
           localStorage.removeItem("jwt");
         }
         return Promise.reject(error);
