@@ -20,6 +20,8 @@ import {
 } from "./constant";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
+import { Redirect } from "react-router-dom";
+import { REFUSED } from "dns";
 
 class Form extends Component {
   configCKEditor = {
@@ -42,6 +44,7 @@ class Form extends Component {
       classes: [],
       quizzes: [],
       isEntry: true,
+      isRedirect: false,
       value: "image/jpeg, image/png, .jpg, .jpeg, .png",
       questionImage: {},
       imageExplanation: {},
@@ -219,12 +222,18 @@ class Form extends Component {
     if (this.state.isEntry) {
       this.questionsController
         .onInsert(data, this.state.image)
-        .then(() => this.toastr.success("Successfully saved"))
+        .then(() => {
+         this.toastr.success("Successfully saved")
+         this.setState({ isRedirect: true })
+        })
         .catch(e => this.toastr.error(e.response.data.message));
     } else {
       this.questionsController
         .onUpdate(data)
-        .then(() => this.toastr.success("Successfully saved"))
+        .then(() => {
+          this.toastr.success("Successfully saved")
+          this.setState({ isRedirect: true })
+        })
         .catch(e => this.toastr.error(e.response.data.message));
     }
   };
@@ -235,6 +244,7 @@ class Form extends Component {
     const {
       model,
       isEntry,
+      isRedirect,
       value,
       questionImage,
       imageExplanation,
@@ -242,7 +252,7 @@ class Form extends Component {
       videoExplanation,
       questionVideo
     } = this.state;
-    return (
+    return ( isRedirect ? <Redirect to="/questions" /> :
       <div className="content-wrapper">
         <div className="col-md-12">
           <div className="row">
