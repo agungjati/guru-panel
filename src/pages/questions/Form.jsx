@@ -21,7 +21,6 @@ import {
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import { Redirect } from "react-router-dom";
-import { REFUSED } from "dns";
 
 class Form extends Component {
   configCKEditor = {
@@ -51,7 +50,13 @@ class Form extends Component {
       pdfExplanation: {},
       videoExplanation: {},
       questionVideo: {},
-      image: null,
+      explanation : {
+        questionImage: null,
+        questionVideo: null,
+        pdfExplanation: null,
+        videoExplanation: null,
+        imageExplanation: null,
+      }
     };
   }
   componentDidMount() {
@@ -68,7 +73,7 @@ class Form extends Component {
           }));
           this.setState({ model: { ...res } });
         })
-        .catch(e => this.toastr.error(e.response.data.message));
+        .catch(e => this.toastr.error(e.response?.data?.message));
     }
   }
 
@@ -90,7 +95,7 @@ class Form extends Component {
         this.setState({ questionsource: questionsource });
         callback([...questionsource]);
       })
-      .catch(e => this.toastr.error(e.response.data.message));
+      .catch(e => this.toastr.error(e.response?.data?.message));
   };
 
   onChangeQuestionSource = questionsource => {
@@ -112,7 +117,7 @@ class Form extends Component {
         this.setState({ chapters: chapters });
         callback([...chapters]);
       })
-      .catch(e => this.toastr.error(e.response.data.message));
+      .catch(e => this.toastr.error(e.response?.data?.message));
   };
 
   onChangeChapter = chapter => {
@@ -134,7 +139,7 @@ class Form extends Component {
         this.setState({ classes: classes });
         callback([...classes]);
       })
-      .catch(e => this.toastr.error(e.response.data.message));
+      .catch(e => this.toastr.error(e.response?.data?.message));
   };
 
   onChangeKelas = kelas => {
@@ -156,7 +161,7 @@ class Form extends Component {
         this.setState({ teachers: teachers });
         callback([...teachers]);
       })
-      .catch(e => this.toastr.error(e.response.data.message));
+      .catch(e => this.toastr.error(e.response?.data?.message));
   };
 
   onChangeTeacher = teacher => {
@@ -178,7 +183,7 @@ class Form extends Component {
         this.setState({ quizzes: quizzes });
         callback([...quizzes]);
       })
-      .catch(e => this.toastr.error(e.response.data.message));
+      .catch(e => this.toastr.error(e.response?.data?.message));
   };
 
   onChangeQuiz = quiz => {
@@ -200,11 +205,12 @@ class Form extends Component {
       [key]: newState
     });
   };
-  handleImageChange = (e) => {
+  handleUploadFileChange = (e, key) => {
     this.setState({
-      image: e.target.files[0]
+     explanation: { ...this.state.explanation, [key]: e.target.files[0] }
     })
   };
+  
   onSaveForm = () => {
     const quizzes = this.state.model?.quizzes?.map(x => x.value) || [];
     const { questionsource, chapter, class: kelas, teacher } = this.state.model;
@@ -221,12 +227,12 @@ class Form extends Component {
     };
     if (this.state.isEntry) {
       this.questionsController
-        .onInsert(data, this.state.image)
+        .onInsert(data, this.state.explanation)
         .then(() => {
          this.toastr.success("Successfully saved")
          this.setState({ isRedirect: true })
         })
-        .catch(e => this.toastr.error(e.response.data.message));
+        .catch(e => this.toastr.error(e.response?.data?.message));
     } else {
       this.questionsController
         .onUpdate(data)
@@ -234,7 +240,7 @@ class Form extends Component {
           this.toastr.success("Successfully saved")
           this.setState({ isRedirect: true })
         })
-        .catch(e => this.toastr.error(e.response.data.message));
+        .catch(e => this.toastr.error(e.response?.data?.message));
     }
   };
   onResetForm = () => {
@@ -345,7 +351,7 @@ class Form extends Component {
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
-                              onChange={this.handleImageChange}
+                              onChange={(e) => this.handleUploadFileChange(e, "questionImage") }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -375,6 +381,7 @@ class Form extends Component {
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
+                              onChange={(e) => this.handleUploadFileChange(e, "questionVideo") }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -538,6 +545,7 @@ class Form extends Component {
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
+                              onChange={(e) => this.handleUploadFileChange(e, "pdfExplanation") }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -567,6 +575,7 @@ class Form extends Component {
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
+                              onChange={(e) => this.handleUploadFileChange(e, "videoExplanation") }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -598,6 +607,7 @@ class Form extends Component {
                             <MagicDropzone
                               className="Dropzone"
                               accept={value}
+                              onChange={(e) => this.handleUploadFileChange(e, "imageExplanation") }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
