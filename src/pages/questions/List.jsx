@@ -4,9 +4,12 @@ import moment from 'moment';
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
 import QuestionController from "../../controllers/questions";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 class List extends Component {
   controller = new QuestionController();
+  toastr = toastr;
   state = {
     dataTable: {
       thead: ["No", "id", "Question", "Question Type", "Created At"],
@@ -32,7 +35,8 @@ class List extends Component {
         this.setState({
           dataTable: { ...this.state.dataTable, tbody: tbody }
         });
-      });
+      })
+      .catch(e => this.toastr.error(e.response?.data?.message));
   }
   render() {
     const { dataTable } = this.state;

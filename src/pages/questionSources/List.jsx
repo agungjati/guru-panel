@@ -4,9 +4,13 @@ import Table from "../../components/Table";
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
 import QuestionsourceController from "../../controllers/questionsources";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 class List extends Component {
   controller = new QuestionsourceController();
+  toastr = toastr;
+
   state = {
     dataTable: {
       thead: ["No", "id", "Source Info", "Year", "Created At"],
@@ -33,7 +37,9 @@ class List extends Component {
         this.setState({
           dataTable: { ...this.state.dataTable, tbody: tbody }
         });
-      });
+      })
+      .catch(e => this.toastr.error(e.response?.data?.message));
+
   }
 
   render() {
