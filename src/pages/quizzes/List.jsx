@@ -3,10 +3,12 @@ import Table from '../../components/Table'
 import ButtonAction from '../../components/ButtonAction'
 import ContentHeader from '../../components/ContentHeader'
 import QuizzController from '../../controllers/quizzes';
-
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 class List extends Component {
 
   controller = new QuizzController();
+  toastr = toastr;
   state = {
     dataTable: {
       thead : [ "No", "Quiz Name", "Capacity", "Duration Minute"],
@@ -29,6 +31,7 @@ class List extends Component {
                       })
 
                    })
+                   .catch(e => this.toastr.error(e.response?.data?.message));
   }
 
   render() {
