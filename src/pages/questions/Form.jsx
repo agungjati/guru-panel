@@ -22,7 +22,7 @@ import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import { Redirect } from "react-router-dom";
 
-const maxSizeVideo = 1 * 1000000;
+const maxSizeVideo = 100 * 1000000;
 class Form extends Component {
   configCKEditor = {
     extraPlugins: "mathjax",
