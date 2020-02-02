@@ -22,6 +22,7 @@ import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import { Redirect } from "react-router-dom";
 
+const maxSizeVideo = 1 * 1000000;
 class Form extends Component {
   configCKEditor = {
     extraPlugins: "mathjax",
@@ -44,18 +45,20 @@ class Form extends Component {
       quizzes: [],
       isEntry: true,
       isRedirect: false,
-      value: "image/jpeg, image/png, .jpg, .jpeg, .png",
+      acceptedImage: "image/jpeg, image/png, .jpg, .jpeg, .png",
+      acceptedVideo: "video/mp4",
+      acceptedPdf: "application/pdf",
       questionImage: {},
       imageExplanation: {},
       pdfExplanation: {},
       videoExplanation: {},
       questionVideo: {},
-      explanation : {
+      explanation: {
         questionImage: null,
         questionVideo: null,
         pdfExplanation: null,
         videoExplanation: null,
-        imageExplanation: null,
+        imageExplanation: null
       }
     };
   }
@@ -194,8 +197,19 @@ class Form extends Component {
       }
     });
   };
-  onDrop = (accepted, rejected, links) => key => {
+  onDropRejected = e => {
+    if (e && e[0]?.size > maxSizeVideo)
+      this.toastr.error("Video size is too large, max 100 Mb");
+  };
+  onDrop = (
+    accepted,
+    rejected,
+    links,
+    onDropRejected,
+    rejectedFiles
+  ) => key => {
     accepted = accepted.map(v => v.preview);
+    onDropRejected = this.onDropRejected(onDropRejected);
     var newState = {
       ...this.state[key],
       ...accepted,
@@ -207,10 +221,10 @@ class Form extends Component {
   };
   handleUploadFileChange = (e, key) => {
     this.setState({
-     explanation: { ...this.state.explanation, [key]: e.target.files[0] }
-    })
+      explanation: { ...this.state.explanation, [key]: e.target.files[0] }
+    });
   };
-  
+
   onSaveForm = () => {
     const quizzes = this.state.model?.quizzes?.map(x => x.value) || [];
     const { questionsource, chapter, class: kelas, teacher } = this.state.model;
@@ -229,16 +243,16 @@ class Form extends Component {
       this.questionsController
         .onInsert(data, this.state.explanation)
         .then(() => {
-         this.toastr.success("Successfully saved")
-         this.setState({ isRedirect: true })
+          this.toastr.success("Successfully saved");
+          this.setState({ isRedirect: true });
         })
         .catch(e => this.toastr.error(e.response?.data?.message));
     } else {
       this.questionsController
         .onUpdate(data)
         .then(() => {
-          this.toastr.success("Successfully saved")
-          this.setState({ isRedirect: true })
+          this.toastr.success("Successfully saved");
+          this.setState({ isRedirect: true });
         })
         .catch(e => this.toastr.error(e.response?.data?.message));
     }
@@ -251,14 +265,18 @@ class Form extends Component {
       model,
       isEntry,
       isRedirect,
-      value,
+      acceptedImage,
+      acceptedVideo,
+      acceptedPdf,
       questionImage,
       imageExplanation,
       pdfExplanation,
       videoExplanation,
       questionVideo
     } = this.state;
-    return ( isRedirect ? <Redirect to="/questions" /> :
+    return isRedirect ? (
+      <Redirect to="/questions" />
+    ) : (
       <div className="content-wrapper">
         <div className="col-md-12">
           <div className="row">
@@ -350,8 +368,10 @@ class Form extends Component {
                             <label>Question Image</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={value}
-                              onChange={(e) => this.handleUploadFileChange(e, "questionImage") }
+                              accept={acceptedImage}
+                              onChange={e =>
+                                this.handleUploadFileChange(e, "questionImage")
+                              }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -380,8 +400,11 @@ class Form extends Component {
                             <label>Question Video</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={value}
-                              onChange={(e) => this.handleUploadFileChange(e, "questionVideo") }
+                              maxSize={maxSizeVideo}
+                              accept={acceptedVideo}
+                              onChange={e =>
+                                this.handleUploadFileChange(e, "questionVideo")
+                              }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -389,6 +412,7 @@ class Form extends Component {
                                   links
                                 )("questionVideo")
                               }
+                              onDropRejected={this.onDropRejected}
                             >
                               <div className="Dropzone-content">
                                 {Object.keys(questionVideo).length > 0 ? (
@@ -396,7 +420,7 @@ class Form extends Component {
                                     key={questionVideo[0]}
                                     alt=""
                                     className="Dropzone-img"
-                                    src={questionVideo[0]}
+                                    src="/dist/icon/mp4Icon.svg"
                                   />
                                 ) : (
                                   "Drag & drop your file into this area or browse for a file to upload"
@@ -544,8 +568,10 @@ class Form extends Component {
                             <label>Pdf Explanation</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={value}
-                              onChange={(e) => this.handleUploadFileChange(e, "pdfExplanation") }
+                              accept={acceptedPdf}
+                              onChange={e =>
+                                this.handleUploadFileChange(e, "pdfExplanation")
+                              }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -560,7 +586,7 @@ class Form extends Component {
                                     key={pdfExplanation[0]}
                                     alt=""
                                     className="Dropzone-img"
-                                    src={pdfExplanation[0]}
+                                    src="/dist/icon/pdfIcon.svg"
                                   />
                                 ) : (
                                   "Drag & drop your file into this area or browse for a file to upload"
@@ -574,8 +600,14 @@ class Form extends Component {
                             <label>Video Explanation</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={value}
-                              onChange={(e) => this.handleUploadFileChange(e, "videoExplanation") }
+                              maxSize={maxSizeVideo}
+                              accept={acceptedVideo}
+                              onChange={e =>
+                                this.handleUploadFileChange(
+                                  e,
+                                  "videoExplanation"
+                                )
+                              }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
@@ -583,6 +615,7 @@ class Form extends Component {
                                   links
                                 )("videoExplanation")
                               }
+                              onDropRejected={this.onDropRejected}
                             >
                               <div className="Dropzone-content">
                                 {Object.keys(videoExplanation).length > 0 ? (
@@ -590,7 +623,7 @@ class Form extends Component {
                                     key={videoExplanation[0]}
                                     alt=""
                                     className="Dropzone-img"
-                                    src={videoExplanation[0]}
+                                    src="/dist/icon/mp4Icon.svg"
                                   />
                                 ) : (
                                   "Drag & drop your file into this area or browse for a file to upload"
@@ -606,8 +639,13 @@ class Form extends Component {
                             <label>Image Explanation</label>
                             <MagicDropzone
                               className="Dropzone"
-                              accept={value}
-                              onChange={(e) => this.handleUploadFileChange(e, "imageExplanation") }
+                              accept={acceptedImage}
+                              onChange={e =>
+                                this.handleUploadFileChange(
+                                  e,
+                                  "imageExplanation"
+                                )
+                              }
                               onDrop={(accepted, rejected, links) =>
                                 this.onDrop(
                                   accepted,
