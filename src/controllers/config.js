@@ -1,4 +1,4 @@
-const apiEndPoint = '//cms.gdi.pojokan.io/'
+const apiEndPoint = 'https://cms.gdi.pojokan.io/'
 
 export {
     apiEndPoint

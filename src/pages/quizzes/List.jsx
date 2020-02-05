@@ -11,7 +11,7 @@ class List extends Component {
   toastr = toastr;
   state = {
     dataTable: {
-      thead : [ "No", "Quiz Name", "Capacity", "Duration Minute"],
+      thead : [ "No", "Quiz Name", "Capacity", "Duration Minute", "Total Questions"],
       tbody : [],
       route: "quiz"
     }
@@ -23,7 +23,12 @@ class List extends Component {
     this.controller.getList().then(res => res.data)
                    .then(quizzes => {
                      const tbody = quizzes.map((quiz, idx) => ({
-                       id: quiz.id, No: ++idx, "Quiz Name": quiz.quizName, "Capacity": quiz.capacity, "Duration Minute": quiz.durationMinute
+                       id: quiz.id, 
+                       No: ++idx, 
+                       "Quiz Name": quiz.quizName, 
+                       "Capacity": quiz.capacity, 
+                       "Duration Minute": quiz.durationMinute,
+                       "Total Questions": quiz.totalQuestions
                      }))
 
                      this.setState({ 
