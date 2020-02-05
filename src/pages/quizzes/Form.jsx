@@ -146,8 +146,9 @@ class Form extends Component {
   }
 
   loadQuestion = (inputValue, callback) => {
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
     this.questionController
-      .getList({ _q: inputValue })
+      .getList(param)
       .then(res => res.data)
       .then(res => {
         const questions = res.map(x => ({ value: x.id, label: x.question }))
@@ -277,9 +278,9 @@ class Form extends Component {
                   <div className="row">
                     <div className="col-md-12">
                       <div className="form-group">
-                        <label>Chapter</label>
+                        <label>Chapter ({model?.chapters?.length || 0})</label>
                         <AsyncSelect
-                          placeholder="Select a chapter"
+                           placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           isMulti
                           cacheOptions
@@ -292,9 +293,9 @@ class Form extends Component {
                   <div className="row">
                     <div className="col-md-12">
                       <div className="form-group">
-                        <label>Class</label>
+                        <label>Class ({model?.classes?.length || 0})</label>
                         <AsyncSelect
-                          placeholder="Select a class"
+                           placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           isMulti
                           cacheOptions
@@ -307,10 +308,10 @@ class Form extends Component {
                   <div className="row">
                     <div className="col-md-12">
                       <div className="form-group">
-                        <label>Questions</label>
+                        <label>Questions ({model?.questions?.length || 0})</label>
                         <AsyncSelect
                           isMulti
-                          placeholder="Select questions"
+                          placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           cacheOptions
                           value={model.questions}
@@ -325,9 +326,9 @@ class Form extends Component {
                   <div className="row">
                     <div className="col-md-12">
                       <div className="form-group">
-                        <label>Course</label>
+                        <label>Course ({model?.courses?.length || 0})</label>
                         <AsyncSelect
-                          placeholder="Select a course"
+                          placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           isMulti
                           cacheOptions
