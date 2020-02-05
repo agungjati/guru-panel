@@ -12,7 +12,7 @@ class List extends Component {
   toastr = toastr;
   state = {
     dataTable: {
-      thead: ["No", "id", "Question", "Question Type", "Created At"],
+      thead: ["No", "Question", "Option", "Answer", "Courses", "Classes"],
       tbody: [],
       route: "questions"
     }
@@ -26,11 +26,10 @@ class List extends Component {
         const tbody = questions.map((question, idx) => ({
           No: ++idx,
           id: question.id,
-          "Question Type": question.questionType,
           "Question": question.question,
-          "Created At": moment(new Date(question.createdAt)).format(
-            "D MMMM Y"
-          ),
+          Answer: question.answer,
+          Courses: question.courses?.name, 
+          Classes: question.class?.className
         }));
         this.setState({
           dataTable: { ...this.state.dataTable, tbody: tbody }
