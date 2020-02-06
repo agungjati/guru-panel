@@ -93,19 +93,16 @@ class Form extends Component {
   }
 
   loadChapter = (inputValue, callback) => {
-    if (inputValue) {
-      this.chapterController
-        .getList({ _q: inputValue })
-        .then(res => res.data)
-        .then(res => {
-          const chapters = res.map(x => ({ value: x.id, label: x.name }))
-          callback(chapters)
-        })
-        .catch(e => this.toastr.error(e.response.data.message));
-
-    } else {
-      callback(null)
-    }
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.chapterController
+    .getList(param)
+    .then(res => res.data)
+    .then(res => {
+      const chapters = res.map(x => ({ value: x.id, label: x.name }))
+      callback(chapters)
+    })
+    .catch(e => this.toastr.error(e.response.data.message));
+    
   }
 
   handleChangeChapter = (chapters) => {
@@ -120,19 +117,16 @@ class Form extends Component {
 
 
   loadClass = (inputValue, callback) => {
-    if (inputValue) {
-      this.classController
-        .getList({ _q: inputValue })
-        .then(res => res.data)
-        .then(res => {
-          const classes = res.map(x => ({ value: x.id, label: x.className }))
-          callback(classes)
-        })
-        .catch(e => this.toastr.error(e.response.data.message));
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.classController
+    .getList(param)
+    .then(res => res.data)
+    .then(res => {
+      const classes = res.map(x => ({ value: x.id, label: x.className }))
+      callback(classes)
+    })
+    .catch(e => this.toastr.error(e.response.data.message));
 
-    } else {
-      callback(null)
-    }
   }
 
   handleChangeClass = (cls) => {
@@ -170,19 +164,15 @@ class Form extends Component {
 
 
   loadCourse = (inputValue, callback) => {
-    if (inputValue) {
-      this.courseController
-        .getList({ _q: inputValue })
-        .then(res => res.data)
-        .then(res => {
-          const courses = res.map(x => ({ value: x.id, label: x.name }))
-          callback(courses)
-        })
-        .catch(e => this.toastr.error(e.response.data.message));
-        
-    } else {
-      callback(null)
-    }
+    const param = inputValue.length > 0 ? { _q: inputValue } : {};
+    this.courseController
+    .getList(param)
+    .then(res => res.data)
+    .then(res => {
+      const courses = res.map(x => ({ value: x.id, label: x.name }))
+      callback(courses)
+    })
+    .catch(e => this.toastr.error(e.response.data.message));
   }
 
   handleChangeCourse = (cls) => {
@@ -283,6 +273,7 @@ class Form extends Component {
                            placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           isMulti
+                          defaultOptions
                           cacheOptions
                           value={model.chapters}
                           loadOptions={this.loadChapter}
@@ -298,6 +289,7 @@ class Form extends Component {
                            placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           isMulti
+                          defaultOptions
                           cacheOptions
                           value={model.classes}
                           loadOptions={this.loadClass}
@@ -314,6 +306,7 @@ class Form extends Component {
                           placeholder="Add an item ..."
                           closeMenuOnSelect={false}
                           cacheOptions
+                          defaultOptions
                           value={model.questions}
                           loadOptions={this.loadQuestion}
                           onChange={this.handleChangeQuestion}
@@ -332,6 +325,7 @@ class Form extends Component {
                           closeMenuOnSelect={false}
                           isMulti
                           cacheOptions
+                          defaultOptions
                           value={model.courses}
                           loadOptions={this.loadCourse}
                           onChange={this.handleCourseClass} />
