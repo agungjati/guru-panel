@@ -4,6 +4,7 @@ import Table from "../../components/Table";
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
 import QuestionsourceController from "../../controllers/questionsources";
+import MUIDataTable from "mui-datatables";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 
@@ -12,11 +13,29 @@ class List extends Component {
   toastr = toastr;
 
   state = {
-    dataTable: {
-      thead: ["No", "id", "Source Info", "Year", "Created At"],
-      tbody: [],
-      route: "question-sources"
-    }
+    title: "Question Sources",
+    data: [],
+    columns : [
+      { name: "id", options: { display: false } },
+      { name: "sourceInfo", label: "Source Info", options: { sort: true } },
+      { name: "year", 
+        label: "Year", 
+        options: { 
+          sort: true, 
+          setCellHeaderProps: () => ({className: "justify-content-end"  }),
+          setCellProps: () => ({className: "text-right"  })
+        } 
+      },
+      { name: "createdAt", label: "Created At", 
+        options: {  
+          sort: true,
+          customBodyRender: (value) => {
+            const createdAt =  moment(new Date(value)).format("D MMMM Y");
+            return createdAt
+          }
+        }
+      },
+    ],
   };
 
   componentDidMount() {
@@ -24,26 +43,16 @@ class List extends Component {
       .getList()
       .then(res => res.data)
       .then(questionsources => {
-        const tbody = questionsources.map((questionsource, idx) => ({
-          No: ++idx,
-          id: questionsource.id,
-          "Source Info": questionsource.sourceInfo,
-          Year: questionsource.year,
-          "Created At": moment(new Date(questionsource.createdAt)).format(
-            "D MMMM Y"
-          )
-        }));
-
         this.setState({
-          dataTable: { ...this.state.dataTable, tbody: tbody }
+          data: questionsources
         });
       })
-      .catch(e => this.toastr.error(e.response?.data?.message));
+      .catch(e => this.toastr.error((e.response?.data?.message) || e.message));
 
   }
 
   render() {
-    const { dataTable } = this.state;
+    const { columns, data, title } = this.state;
     return (
       <div className="content-wrapper">
         <ContentHeader title="List Question Sources" />
@@ -52,7 +61,6 @@ class List extends Component {
             <div className="col-md-12">
               <div className="card">
                 <div className="card-header">
-                  <h3 className="card-title">List Question Sources</h3>
                   <ButtonAction
                     title="Add question sources"
                     icon="fas fa-plus"
@@ -60,7 +68,16 @@ class List extends Component {
                     url="/question-sources/entry"
                   />
                 </div>
-                <Table data={dataTable} />
+                <MUIDataTable
+                  title={title}
+                  data={data}
+                  columns={columns}
+                  options={{ 
+                    filter: false, 
+                    download: false, 
+                    print: false,
+                    selectableRows: 'none' }}
+                />
               </div>
             </div>
           </div>

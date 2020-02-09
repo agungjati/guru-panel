@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Table from "../../components/Table";
-import moment from 'moment';
+import MUIDataTable from "mui-datatables";
+import { Redirect } from "react-router-dom";
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
 import QuestionController from "../../controllers/questions";
@@ -11,11 +12,18 @@ class List extends Component {
   controller = new QuestionController();
   toastr = toastr;
   state = {
-    dataTable: {
-      thead: ["No", "id", "Question", "Question Type", "Created At"],
-      tbody: [],
-      route: "questions"
-    }
+    title: "Questions",
+    data: [],
+    columns : [
+      { name: "id", options: { display: false } },
+      { name: "question", label: "Question", options: { sort: true } },
+      { name: "answer", label: "Answer", options: { sort: true } },
+      { name: "courses.name", label: "Courses", options: { sort: true } },
+      { name: "class.className", label: "Classes", options: { sort: true } },
+      { name: "Workflow.status", label: "Status", options: { sort: true, display: false } },
+    ],
+    isRedirect: false,
+    idSelected: ""
   };
 
   componentDidMount() {
@@ -23,24 +31,30 @@ class List extends Component {
       .getList()
       .then(res => res.data)
       .then(questions => {
-        const tbody = questions.map((question, idx) => ({
-          No: ++idx,
-          id: question.id,
-          "Question Type": question.questionType,
-          "Question": question.question,
-          "Created At": moment(new Date(question.createdAt)).format(
-            "D MMMM Y"
-          ),
-        }));
         this.setState({
-          dataTable: { ...this.state.dataTable, tbody: tbody }
+          data: questions
         });
       })
-      .catch(e => this.toastr.error(e.response?.data?.message));
+      .catch(e => this.toastr.error((e.response?.data?.message) || e.message));
   }
+  onRowClick	= (rowData) => {
+    const status = rowData[rowData.length - 1]
+    if(status === "pending" || status == null){
+      this.setState({
+        isRedirect: true,
+        idSelected: rowData[0]
+      })
+    }
+  }
+  onRowsDelete = (rowData) => {
+    const index = rowData.data[0].index;
+    const data = this.state.data.filter((x, idx) => idx !== index);
+    this.setState({data})
+  }   
   render() {
-    const { dataTable } = this.state;
+    const {  columns, data, title, isRedirect, idSelected  } = this.state;
     return (
+      isRedirect ? <Redirect to={ "/questions/"+ idSelected } /> :
       <div className="content-wrapper">
         <ContentHeader title="Questions" />
         <div className="content">
@@ -48,7 +62,6 @@ class List extends Component {
             <div className="col-md-12">
               <div className="card">
                 <div className="card-header">
-                  <h3 className="card-title">List Questions</h3>
                   <ButtonAction
                     title="Add questions"
                     icon="fas fa-plus"
@@ -56,14 +69,26 @@ class List extends Component {
                     url="/questions/entry"
                   />
                 </div>
-                <Table data={dataTable} />
+                <MUIDataTable
+                  title={title}
+                  data={data}
+                  columns={columns}
+                  options={{ 
+                    filter: false, 
+                    download: false, 
+                    print: false,
+                    onRowClick: this.onRowClick,
+                    onRowsDelete: this.onRowsDelete,
+                    // isRowSelectable: () => false,
+                    selectableRows: 'single' }}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     );
-  }
+  } 
 }
 
 export default List;

@@ -20,7 +20,7 @@ const DashboardPage = lazy(() => import("./dashboard/DashboardPage"));
 const ListQuiz = lazy(() => import("./quizzes/List"));
 const FormQuiz = lazy(() => import("./quizzes/Form"));
 const ListQuestions = lazy(() => import("./questions/List"));
-const AddQuestion = lazy(() => import("./questions/Form"));
+const FormQuestion = lazy(() => import("./questions/Form"));
 const ListQuestionsources = lazy(() => import("./questionSources/List"));
 const AddQuestionsource = lazy(() => import("./questionSources/Form"));
 
@@ -51,7 +51,8 @@ export default function HomePage() {
         <Route path="/quiz/entry" component={FormQuiz} />
         <Route path="/quiz/:id" component={FormQuiz} />
         <Route exact path="/questions" component={ListQuestions} />
-        <Route path="/questions/entry" component={AddQuestion} />
+        <Route path="/questions/entry" component={FormQuestion} />
+        <Route path="/questions/:id" component={FormQuestion} />
         <Route exact path="/question-sources" component={ListQuestionsources} />
         <Route path="/question-sources/entry" component={AddQuestionsource} />
         <Route path="/question-sources/:id" component={AddQuestionsource} />
