@@ -18,9 +18,16 @@ class List extends Component {
     columns : [
       { name: "id", options: { display: false } },
       { name: "sourceInfo", label: "Source Info", options: { sort: true } },
-      { name: "year", label: "Year", options: { sort: true } },
-      { name: "createdAt", label: "Created At", 
+      { name: "year", 
+        label: "Year", 
         options: { 
+          sort: true, 
+          setCellHeaderProps: () => ({className: "justify-content-end"  }),
+          setCellProps: () => ({className: "text-right"  })
+        } 
+      },
+      { name: "createdAt", label: "Created At", 
+        options: {  
           sort: true,
           customBodyRender: (value) => {
             const createdAt =  moment(new Date(value)).format("D MMMM Y");
@@ -40,7 +47,7 @@ class List extends Component {
           data: questionsources
         });
       })
-      .catch(e => this.toastr.error(e.response?.data?.message));
+      .catch(e => this.toastr.error((e.response?.data?.message) || e.message));
 
   }
 
@@ -69,7 +76,6 @@ class List extends Component {
                     filter: false, 
                     download: false, 
                     print: false,
-                    onRowClick: this.onRowClick,
                     selectableRows: 'none' }}
                 />
               </div>

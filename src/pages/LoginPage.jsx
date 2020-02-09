@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import AuthController from "../controllers/auth";
 import { Redirect } from "react-router-dom";
-
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 class Login extends Component {
   controller = new AuthController();
-
+  toastr = toastr;
   state = {
     username: "",
     password: "",
@@ -22,10 +23,7 @@ class Login extends Component {
           redirect: true
         });
       })
-      .catch(error => {
-        // TO DO: add error handling
-        console.log(error);
-      });
+      .catch(e => this.toastr.error((e.response?.data?.message) || e.message));
   };
   render() {
     return this.state.redirect ? (

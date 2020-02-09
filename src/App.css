@@ -1,3 +1,6 @@
 .text-right {
   text-align: right !important;
 }
+.justify-content-end >span {
+  justify-content: flex-end;
+}

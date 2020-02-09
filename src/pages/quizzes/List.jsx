@@ -16,9 +16,27 @@ class List extends Component {
     columns : [
       { name: "id", options: { display: false } },
       { name: "quizName", label: "Quiz Name", options: { sort: true } },
-      { name: "capacity", label: "Capacity", options: { sort: true } },
-      { name: "durationMinute", label: "Duration Minute", options: { sort: true } },
-      { name: "totalQuestions", label: "Total Questions", options: { sort: true } },
+      { name: "capacity", label: "Capacity", 
+        options: { 
+          sort: true,
+          setCellHeaderProps: () => ({className: "justify-content-end"  }),
+          setCellProps: () => ({className: "text-right"  }) 
+        } 
+      },
+      { name: "durationMinute", label: "Duration Minute", 
+        options: { 
+          sort: true,
+          setCellHeaderProps: () => ({className: "justify-content-end"  }),
+          setCellProps: () => ({className: "text-right"  })
+        } 
+      },
+      { name: "totalQuestions", label: "Total Questions", 
+        options: { 
+          sort: true,
+          setCellHeaderProps: () => ({className: "justify-content-end"  }),
+          setCellProps: () => ({className: "text-right"  }) 
+        } 
+      },
     ],
     isRedirect: false,
     idSelected: ""
@@ -33,7 +51,7 @@ class List extends Component {
                        data: quizzes 
                       })
                    })
-                   .catch(e => this.toastr.error(e.response?.data?.message));
+                   .catch(e => this.toastr.error((e.response?.data?.message) || e.message));
   }
   onRowClick	= (rowData) => {
     this.setState({
