@@ -8,15 +8,53 @@ import QuestionController from "../../controllers/questions";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 
-class List extends Component {
+const ListOption = ({ question: {optionA, optionB, optionC, optionD, optionE } }) => {
+  const [ isCollapse, setCollapse] = React.useState(false)
+  const collapsingList = () => {
+    setCollapse(true)
+  }
+  const unCollapseList = () => {
+    setCollapse(false)
+  }
+  const style = {
+      transition: "all 0.5s ease",
+      listStyle: "upper-latin",
+  }
+  
+  return(<div onMouseOver={collapsingList} onMouseLeave={unCollapseList}>
+        <ul style={ isCollapse ? { ...style, display: "none"} : style} >
+          <li>{optionA}</li> 
+          <li>{optionB}</li> 
+        </ul>
+        <ul style={ isCollapse ?  style : { ...style, visibility: "hidden", position: "fixed", top: -999, transform: "translateY(-50px)" } } >
+          <li>{optionA}</li> 
+          <li>{optionB}</li> 
+          <li>{optionD}</li> 
+          <li>{optionE}</li>
+          <li>{optionC}</li> 
+        </ul>
+      </div>);
+}
+class List extends Component {  
+
   controller = new QuestionController();
-  toastr = toastr;
+  toastr = toastr;  
   state = {
     title: "Questions",
     data: [],
     columns : [
       { name: "id", options: { display: false } },
+      { name: "no", label: "No.", options: { sort: true } },
       { name: "question", label: "Question", options: { sort: true } },
+      { name: "option", 
+        label: "Question", 
+        options: { 
+          customBodyRender: (value) => (
+            <ListOption question={value} />
+          )
+        } 
+      },
+      { name: "questionType", label: "Question Type", options: { sort: true } },
       { name: "answer", label: "Answer", options: { sort: true } },
       { name: "courses.name", label: "Courses", options: { sort: true } },
       { name: "class.className", label: "Classes", options: { sort: true } },
@@ -32,7 +70,13 @@ class List extends Component {
       .then(res => res.data)
       .then(questions => {
         this.setState({
-          data: questions
+          data: questions?.map((question, i) => {
+                  const {optionA, optionB, optionC, optionD, optionE } = question;
+                  return({...question, 
+                          option: {optionA, optionB, optionC, optionD, optionE },
+                          no: `${i+1}.` 
+                        })
+                })
         });
       })
       .catch(e => this.toastr.error((e.response?.data?.message) || e.message));
