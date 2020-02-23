@@ -9,7 +9,8 @@ import ChaptersController from "../../controllers/chapters";
 import ClassesController from "../../controllers/classes";
 import TeachersController from "../../controllers/teachers";
 import QuizzesController from "../../controllers/quizzes";
-import CKEditor from "ckeditor4-react";
+import CKEditor from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@juniyadi/ckeditor5-custom-build';
 import "./styles.css";
 import { QuestionsModel } from "../../model/questionsModel";
 import {
@@ -24,12 +25,6 @@ import { Redirect } from "react-router-dom";
 
 const maxSizeVideo = 100 * 1000000;
 class Form extends Component {
-  configCKEditor = {
-    extraPlugins: "mathjax",
-    mathJaxLib:
-      "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML",
-    height: 320
-  };
   questionsController = new QuestionsController();
   questionSourcesController = new QuestionSourcesController();
   chaptersController = new ChaptersController();
@@ -347,17 +342,12 @@ class Form extends Component {
                           <div className="form-group">
                             <label>Question Detail</label>
                             <CKEditor
-                              onBeforeLoad={CKEDITOR =>
-                                (CKEDITOR.disableAutoInline = true)
-                              }
-                              config={this.configCKEditor}
-                              data={model.questionDetail}
-                              onChange={ev =>
-                                this.onChangeModel(
-                                  "questionDetail",
-                                  ev.editor.getData()
-                                )
-                              }
+                              editor={ ClassicEditor }
+                              data="<p>Hello from CKEditor 5!</p>"
+                              onInit={ editor => {
+                                  // You can store the "editor" and use when it is needed.
+                                  console.log( 'Editor is ready to use!', editor );
+                              } }
                             />
                           </div>
                         </div>
@@ -546,17 +536,12 @@ class Form extends Component {
                             <div className="form-group">
                               <label>Text Explanation</label>
                               <CKEditor
-                                onBeforeLoad={CKEDITOR =>
-                                  (CKEDITOR.disableAutoInline = true)
-                                }
-                                config={this.configCKEditor}
-                                data={model.textExplanation}
-                                onChange={ev =>
-                                  this.onChangeModel(
-                                    "textExplanation",
-                                    ev.editor.getData()
-                                  )
-                                }
+                                editor={ ClassicEditor }
+                                data="<p>Hello from CKEditor 5!</p>"
+                                onInit={ editor => {
+                                    // You can store the "editor" and use when it is needed.
+                                    console.log( 'Editor is ready to use!', editor );
+                                } }
                               />
                             </div>
                           </div>
