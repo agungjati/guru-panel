@@ -29,16 +29,17 @@ class Navbar extends React.Component {
       <ul className="navbar-nav ml-auto">
 
         <li className="nav-item dropdown">
-          <a className="nav-link" data-toggle="dropdown" href="#">
+          <div className="nav-link pointer" data-toggle="dropdown" >
             <i className="far fa-user-circle"></i>
-          </a>
+          </div>
           <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a className="dropdown-item">
-              <i className="fas fa-user mr-2"></i>Profile</a>
+            {/*<a className="dropdown-item">
+              <i className="fas fa-user mr-2"></i>Profile
+  </a>*/}
             <div className="dropdown-divider"></div>
-            <a href="#" onClick={this.onLogOut} className="dropdown-item">
+            <div onClick={this.onLogOut} className="dropdown-item pointer">
               <i className="fas fa-sign-out-alt mr-2"></i>Logout
-            </a>
+            </div>
           </div>
         </li>
       </ul>

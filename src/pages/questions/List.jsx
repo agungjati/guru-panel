@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Table from "../../components/Table";
 import MUIDataTable from "mui-datatables";
 import { Redirect } from "react-router-dom";
 import ButtonAction from "../../components/ButtonAction";

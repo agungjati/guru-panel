@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import AsyncSelect from 'react-select/async'
 import ContentHeader from '../../components/ContentHeader'
-import CKEditor from 'ckeditor4-react'
+// import CKEditor from 'ckeditor4-react'
+import CKEditor from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@juniyadi/ckeditor5-custom-build';
+
 import QuizController from '../../controllers/quizzes'
 import ClassController from '../../controllers/classes'
 import ChapterController from '../../controllers/chapters'
@@ -26,13 +29,6 @@ class Form extends Component {
     isEntry: true,
     isRedirect: false
   }
-  configCKEditor = {
-    extraPlugins: 'mathjax',
-    mathJaxLib: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
-    height: 320
-  }
-
-
 
   componentDidMount() {
     const paramId = this.props.match.params.id;
@@ -47,7 +43,7 @@ class Form extends Component {
           res.courses = res.courses.map(x => ({ label: x.name, value: x.id }))
           this.setState({ model: { ...res } })
         })
-        .catch(e => this.toastr.error(e.response.data.message))
+        .catch(e => this.toastr.error(e.response?.data?.message))
     }
 
   }
@@ -220,10 +216,14 @@ class Form extends Component {
                     />
                   </div>
                   <CKEditor
-                    onBeforeLoad={(CKEDITOR) => (CKEDITOR.disableAutoInline = true)}
-                    config={this.configCKEditor}
-                    data={model.description}
-                    onChange={(ev) => this.onChangeModel("description", ev.editor.getData())} />
+                              editor={ ClassicEditor }
+                              data={model?.description || ""}
+                              onChange={(ev, editor) =>{
+                                this.onChangeModel("description", editor.getData())
+                                }
+                              } 
+                            />
+              
                   <div className="row">
                     <div className="col-md-4">
                       <div className="form-group">
