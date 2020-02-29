@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from 'moment';
-import Table from "../../components/Table";
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
 import QuestionsourceController from "../../controllers/questionsources";
