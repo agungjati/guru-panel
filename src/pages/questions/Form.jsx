@@ -9,8 +9,7 @@ import ChaptersController from "../../controllers/chapters";
 import ClassesController from "../../controllers/classes";
 import TeachersController from "../../controllers/teachers";
 import QuizzesController from "../../controllers/quizzes";
-import CKEditor from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@juniyadi/ckeditor5-custom-build';
+import { Editor } from '@tinymce/tinymce-react';
 import "./styles.css";
 import { QuestionsModel } from "../../model/questionsModel";
 import {
@@ -73,6 +72,10 @@ class Form extends Component {
         })
         .catch(e => this.toastr.error(e.response?.data?.message));
     }
+  }
+
+  handleEditorChange = (content, editor) => {
+    console.log('Content was updated:', content);
   }
 
   onChangeModel = (type, value) => {
@@ -341,16 +344,25 @@ class Form extends Component {
                         <div className="col-md-12">
                           <div className="form-group">
                             <label>Question Detail</label>
-                            <CKEditor
-                              editor={ ClassicEditor }
-                              data={model?.questionDetail || ""}	                                 
-                              onChange={(ev, editor) =>	             
-                                this.onChangeModel(	
-                                  "questionDetail",	
-                                  editor.getData()	
-                                )	
-                              }
-                            />
+                              <Editor
+                                apiKey={ process.env.REACT_APP_TINYMCE_API}
+                                initialValue="<p>This is the initial content of the editor</p>"
+                                init={{
+                                height: 500,
+                                menubar: false,
+                                plugins: [
+                                  'advlist autolink lists link image charmap print preview anchor',
+                                  'searchreplace visualblocks code fullscreen',
+                                  'insertdatetime media table paste code help wordcount',
+                                ],
+                                external_plugins: {
+                                  'tiny_mce_wiris': '/plugins/plugin.min.js'
+                                },
+                                toolbar:
+                                'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry | bullist numlist outdent indent | removeformat | help'
+                              }}
+                              onEditorChange={this.handleEditorChange}
+                              />
                           </div>
                         </div>
                       </div>
@@ -537,8 +549,8 @@ class Form extends Component {
                           <div className="col-md-12">
                             <div className="form-group">
                               <label>Text Explanation</label>
-                              <CKEditor
-                                editor={ ClassicEditor }
+                              {/* <CKEditor
+                                editor={ Editor }
                                 data={model?.textExplanation || ""}
                                 onChange={(ev, editor) =>	                   
                                   this.onChangeModel(	
@@ -546,7 +558,7 @@ class Form extends Component {
                                     editor.getData()	
                                   )	
                                 }
-                              />
+                              /> */}
                             </div>
                           </div>
                         </div>
