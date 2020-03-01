@@ -3,6 +3,7 @@
 ## Envroitment
 ```
 REACT_APP_API=https://this.example.com/
+REACT_APP_TINYMCE_API=
 ```
 ### Notes
 - Pada akhiran API, harus menggunakan `/` , jika tidak maka akan error

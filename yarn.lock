@@ -875,13 +875,6 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@ckeditor/ckeditor5-react@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@ckeditor/ckeditor5-react/-/ckeditor5-react-2.1.0.tgz#f612546a5a328899a436d71b72ffd632600049e8"
-  integrity sha512-rlHjRKhwP9tNK0Yj2UJShL14mRfxLPgJ+Pv6zTv/Mvmd4wrwGnJf+5ybOAGK92S02hP1cXH+9km+PRO1b4V+ng==
-  dependencies:
-    prop-types "^15.6.1"
-
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -1157,11 +1150,6 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@juniyadi/ckeditor5-custom-build@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@juniyadi/ckeditor5-custom-build/-/ckeditor5-custom-build-1.2.0.tgz#6a6de61b08d7b283b5c6f7f2a788e6e711039434"
-  integrity sha512-U0JrcrmnbxpP1PLaUFhUuolLmlJj2AjDsi4RJmLuyb8nVV0lAJibUom0vpkXYYTFJ9+eA/0t+vWFfid9utd8Ow==
-
 "@material-ui/core@^4.9.1":
   version "4.9.3"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-4.9.3.tgz#29ad51f4d36cbc3af7a9db27d92f93fa4fa42d50"
@@ -1403,6 +1391,13 @@
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-7.2.1.tgz#2ad4e844175a3738cb9e7064be5ea070b8863a1c"
   integrity sha512-oZ0Ib5I4Z2pUEcoo95cT1cr6slco9WY7yiPpG+RGNkj8YcYgJnM7pXmYmorNOReh8MIGcKSqXyeGjxnr8YiZbA==
+
+"@tinymce/tinymce-react@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@tinymce/tinymce-react/-/tinymce-react-3.5.0.tgz#5017be56aeab1077f09d3f74a386883e5524a33f"
+  integrity sha512-sZPerYmSWQcdk7F9KEvCC3/kPNZ9Bb+dk8rS0RoYyYql/gqgNpLpycC+CC/KhgT0wDaYuRoCcdV1DVZGam+oOg==
+  dependencies:
+    prop-types "^15.6.2"
 
 "@types/babel__core@^7.1.0":
   version "7.1.3"
@@ -1748,6 +1743,11 @@
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
+
+"@wiris/mathtype-tinymce5@^7.17.0":
+  version "7.17.0"
+  resolved "https://registry.yarnpkg.com/@wiris/mathtype-tinymce5/-/mathtype-tinymce5-7.17.0.tgz#b3eaaa69ee5ca8b96b9d56a0b675b1cde2c43383"
+  integrity sha512-iCk3qowtCzn3doOmA9blEmmYptzX2jBFcjdNkvgmle5Qi51wOK0GgDZiAehGodIvsOAIvn/G/m87SbLsX5TKCA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -2783,14 +2783,6 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
-
-ckeditor4-react@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/ckeditor4-react/-/ckeditor4-react-1.0.1.tgz#4c626ab31a4bda8b4e50e064ca1072f5ccaca5a0"
-  integrity sha512-Y27p/FZsUhkYBJ0aWzD1MMCu/U26iFiMryCMyQyMx9OTzo0045PYzrmoxgAtminEzW80y5Aln8asYL+QTe/5sg==
-  dependencies:
-    load-script "^1.0.0"
-    prop-types "^15.6.2"
 
 class-utils@^0.3.5:
   version "0.3.6"
@@ -6517,11 +6509,6 @@ load-json-file@^4.0.0:
     pify "^3.0.0"
     strip-bom "^3.0.0"
 
-load-script@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/load-script/-/load-script-1.0.0.tgz#0491939e0bee5643ee494a7e3da3d2bac70c6ca4"
-  integrity sha1-BJGTngvuVkPuSUp+PaPSuscMbKQ=
-
 loader-fs-cache@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/loader-fs-cache/-/loader-fs-cache-1.0.2.tgz#54cedf6b727e1779fd8f01205f05f6e88706f086"
@@ -8649,7 +8636,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.3"
 
-prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
