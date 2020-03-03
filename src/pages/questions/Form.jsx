@@ -74,10 +74,7 @@ class Form extends Component {
     }
   }
 
-  handleEditorChange = (content, editor) => {
-    console.log('Content was updated:', content);
-  }
-
+  
   onChangeModel = (type, value) => {
     let val = value;
     this.setState({ model: { ...this.state.model, [type]: val } });
@@ -346,7 +343,7 @@ class Form extends Component {
                             <label>Question Detail</label>
                               <Editor
                                 apiKey={ process.env.REACT_APP_TINYMCE_API}
-                                initialValue="<p>This is the initial content of the editor</p>"
+                                value={model?.questionDetail || ""}
                                 init={{
                                 height: 500,
                                 menubar: false,
@@ -361,8 +358,10 @@ class Form extends Component {
                                 toolbar:
                                 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry | bullist numlist outdent indent | removeformat | help'
                               }}
-                              onEditorChange={this.handleEditorChange}
-                              />
+                              onEditorChange={(content) => {
+                                this.onChangeModel("questionDetail",	content)	
+                              }
+                              }/>
                           </div>
                         </div>
                       </div>
@@ -549,16 +548,27 @@ class Form extends Component {
                           <div className="col-md-12">
                             <div className="form-group">
                               <label>Text Explanation</label>
-                              {/* <CKEditor
-                                editor={ Editor }
-                                data={model?.textExplanation || ""}
-                                onChange={(ev, editor) =>	                   
-                                  this.onChangeModel(	
-                                    "textExplanation",	
-                                    editor.getData()	
-                                  )	
-                                }
-                              /> */}
+                              <Editor
+                                apiKey={ process.env.REACT_APP_TINYMCE_API}
+                                value={model?.textExplanation || ""}
+                                init={{
+                                height: 500,
+                                menubar: false,
+                                plugins: [
+                                  'advlist autolink lists link image charmap print preview anchor',
+                                  'searchreplace visualblocks code fullscreen',
+                                  'insertdatetime media table paste code help wordcount',
+                                ],
+                                external_plugins: {
+                                  'tiny_mce_wiris': '/plugins/plugin.min.js'
+                                },
+                                toolbar:
+                                'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry | bullist numlist outdent indent | removeformat | help'
+                              }}
+                              onEditorChange={(content) => {
+                                this.onChangeModel("textExplanation",	content)	
+                              }
+                              }/>
                             </div>
                           </div>
                         </div>
