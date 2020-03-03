@@ -11,7 +11,7 @@ import { QuizModel } from '../../model/QuizModel'
 import 'toastr/build/toastr.min.css'
 import toastr from 'toastr'
 import { Redirect } from "react-router-dom";
-
+import { Editor } from '@tinymce/tinymce-react';
 class Form extends Component {
 
   toastr = toastr;
@@ -213,7 +213,30 @@ class Form extends Component {
                       onChange={(ev) => this.onChangeModel("quizName", ev.target.value)}
                     />
                   </div>
-      
+                  <div className="form-group">
+                    <label htmlFor="inputQuizName">Description</label>
+                    <Editor
+                      apiKey={ process.env.REACT_APP_TINYMCE_API}
+                      value={model?.description || ""}
+                      init={{
+                      height: 500,
+                      menubar: false,
+                      plugins: [
+                        'advlist autolink lists link image charmap print preview anchor',
+                        'searchreplace visualblocks code fullscreen',
+                        'insertdatetime media table paste code help wordcount',
+                      ],
+                      external_plugins: {
+                        'tiny_mce_wiris': '/plugins/plugin.min.js'
+                      },
+                      toolbar:
+                      'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry | bullist numlist outdent indent | removeformat | help'
+                    }}
+                    onEditorChange={(content) => {
+                      this.onChangeModel("description",	content)	
+                    }
+                    }/>
+                  </div>
                   <div className="row">
                     <div className="col-md-4">
                       <div className="form-group">
@@ -318,8 +341,7 @@ class Form extends Component {
                           defaultOptions
                           value={model.courses}
                           loadOptions={this.loadCourse}
-                          onChange={this.handleCourseClass} />
-
+                          onChange={this.handleChangeCourse} />
                       </div>
                     </div>
                   </div>
