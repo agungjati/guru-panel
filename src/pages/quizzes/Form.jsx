@@ -62,16 +62,17 @@ class Form extends Component {
       const chapters = this.state.model.chapters.map(x => x.value);
       const courses = this.state.model.courses.map(x => x.value);
       const classes = this.state.model.classes.map(x => x.value);
+      const questions = this.state.model.questions.map(x => x.value);
 
       if (this.state.isEntry) {
-        this.quizController.onInsert({ ...this.state.model, chapters, courses, classes })
+        this.quizController.onInsert({ ...this.state.model, chapters, courses, classes, questions })
         .then(() => {
           this.toastr.success('Successfully saved')
           this.setState({ isRedirect: true })
         })
         .catch(e => this.toastr.error(e.response.data.message))
       } else {
-        this.quizController.onUpdate({ ...this.state.model, chapters, courses, classes })
+        this.quizController.onUpdate({ ...this.state.model, chapters, courses, classes, questions })
         .then(() => {
           this.toastr.success('Successfully saved')
           this.setState({ isRedirect: true })
