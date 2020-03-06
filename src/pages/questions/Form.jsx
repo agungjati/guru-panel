@@ -74,7 +74,12 @@ class Form extends Component {
     }
   }
 
-  
+  componentWillUnmount(){
+    const mathTypeEl = document.querySelector("div[id='wrs_modal_dialogContainer[0]']");
+    if(mathTypeEl){
+      mathTypeEl.remove(); 
+    }
+  }
   onChangeModel = (type, value) => {
     let val = value;
     this.setState({ model: { ...this.state.model, [type]: val } });
