@@ -281,7 +281,7 @@ class Form extends Component {
           <div className="row">
             <div className="col-md-8">
               <ContentHeader
-                title={`${isEntry ? "Create A" : "Edit"} Question`}
+                title={`${isEntry ? "Create " : "Edit"} Question`}
               />
             </div>
             <div className="col-md-4 p-2">
