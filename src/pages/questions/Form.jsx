@@ -92,7 +92,7 @@ class Form extends Component {
       .then(res => {
         const questionsource = res.map(x => ({
           value: x.id,
-          label: x.sourceInfo
+          label: `${x.year}  ${x.sourceInfo}`
         }));
         this.setState({ questionsource: questionsource });
         callback([...questionsource]);
