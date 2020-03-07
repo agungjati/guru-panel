@@ -7,7 +7,8 @@ const answerOptions = [
 ];
 const questionOptions = [
   { value: "image", text: "image" },
-  { value: "text", text: "text" }
+  { value: "text", text: "text" },
+  { value: "audio", text: "audio" }
 ];
 const explanationOptions = [
   { value: "text", text: "text" },
